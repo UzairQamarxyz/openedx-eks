@@ -10,6 +10,11 @@ EOT
   default     = {}
 }
 
+variable "name" {
+  type        = string
+  description = "Base name for the RDS resources (e.g., 'mysql')."
+}
+
 variable "vpc_id" {
   type        = string
   description = "ID of the VPC where RDS will be created."

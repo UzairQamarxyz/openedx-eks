@@ -2,6 +2,7 @@ module "rds_mysql" {
   source   = "./modules/rds"
   env_vars = var.env_vars
 
+  name              = replace(local.rds_name, "-", "_")
   vpc_id            = module.vpc.vpc_id
   vpc_cidr          = module.vpc.vpc_cidr
   private_subnets   = module.vpc.private_subnets

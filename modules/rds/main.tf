@@ -2,7 +2,7 @@ module "rds_mysql_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.3.1"
 
-  name        = "${module.rds_env.id}-rds-mysql"
+  name        = "${var.name}-sg"
   description = "Security group for RDS MySQL"
   vpc_id      = var.vpc_id
 
@@ -26,16 +26,14 @@ module "rds_mysql_sg" {
     }
   ]
 
-  tags = merge(module.rds_env.tags, {
-    Name = "${module.rds_env.id}-rds-mysql"
-  })
+  tags = module.rds_env.tags
 }
 
 module "rds_mysql" {
   source  = "terraform-aws-modules/rds/aws"
   version = "7.1.0"
 
-  identifier = "${module.rds_env.id}-mysql"
+  identifier = var.name
 
   # Engine
   engine               = "mysql"

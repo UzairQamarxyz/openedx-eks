@@ -1,3 +1,18 @@
+output "db_instance_username" {
+  description = "RDS MySQL instance master username"
+  value       = module.rds_mysql.db_instance_username
+}
+
+output "db_instance_port" {
+  description = "RDS MySQL instance port"
+  value       = module.rds_mysql.db_instance_port
+}
+
+output "db_instance_master_secret_arn" {
+  description = "RDS MySQL instance master secret ARN"
+  value       = module.rds_mysql.db_instance_master_user_secret_arn
+}
+
 output "db_instance_endpoint" {
   description = "RDS MySQL instance endpoint"
   value       = module.rds_mysql.db_instance_endpoint
