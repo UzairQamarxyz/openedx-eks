@@ -35,15 +35,12 @@ module "eks" {
   vpc_id     = var.vpc_id
   subnet_ids = var.private_subnets
 
+  enable_cluster_creator_admin_permissions = true
+
+  node_security_group_name            = "${var.cluster_name}-node-sg"
+  node_security_group_use_name_prefix = false
+
   node_security_group_additional_rules = {
-    ingress_cluster_kubelet_ipv6 = {
-      description                   = "Cluster API to node kubelets"
-      protocol                      = "tcp"
-      from_port                     = 10251
-      to_port                       = 10251
-      type                          = "ingress"
-      source_cluster_security_group = true
-    }
     ingress = {
       type                          = "ingress"
       description                   = "Allow TCP inbound traffic on port 8080."
@@ -67,6 +64,22 @@ module "eks" {
       to_port     = 0
       type        = "ingress"
       self        = true
+    }
+  }
+
+  security_group_additional_rules = {
+    ingress = {
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = [var.vpc_cidr]
+    }
+    egress = {
+      from_port        = 0
+      to_port          = 0
+      protocol         = "-1"
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = ["::/0"]
     }
   }
 
@@ -190,3 +203,12 @@ resource "aws_security_group_rule" "coredns_rule" {
   source_security_group_id = module.eks.cluster_primary_security_group_id
 }
 
+resource "aws_security_group_rule" "cluster_egress_all" {
+  description       = "Allow cluster control plane to communicate out"
+  protocol          = "-1"
+  from_port         = 0
+  to_port           = 0
+  type              = "egress"
+  security_group_id = module.eks.cluster_security_group_id
+  cidr_blocks       = ["0.0.0.0/0"]
+}

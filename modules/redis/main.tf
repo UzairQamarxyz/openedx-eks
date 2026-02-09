@@ -2,8 +2,8 @@ module "redis" {
   source  = "cloudposse/elasticache-redis/aws"
   version = "2.0.0"
 
-  name                 = "${module.redis_env.id}-redis"
-  replication_group_id = "${module.redis_env.id}-redis-replication-group"
+  name                 = var.name
+  replication_group_id = "${var.name}-replication-group"
   description          = "Redis cluster for OpenEdX caching and message broker"
   vpc_id               = var.vpc_id
 

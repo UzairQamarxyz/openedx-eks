@@ -79,11 +79,11 @@ module "rds_mysql" {
   cloudwatch_log_group_kms_key_id = var.default_kms_key_arn
 
   # Performance Insights
-  performance_insights_enabled    = true
+  performance_insights_enabled    = var.performance_insights_enabled
   performance_insights_kms_key_id = var.default_kms_key_arn
 
   # Multi-AZ
-  multi_az = true
+  multi_az = var.multi_az_enabled
 
   tags = module.rds_env.tags
 }

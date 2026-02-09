@@ -10,6 +10,11 @@ EOT
   default     = {}
 }
 
+variable "name" {
+  type        = string
+  description = "Name of the Redis cluster."
+}
+
 variable "vpc_id" {
   type        = string
   description = "ID of the VPC where Redis will be created."

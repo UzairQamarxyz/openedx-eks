@@ -1,41 +1,8 @@
-module "opensearch_sg" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.3.1"
-
-  name        = "${module.opensearch_env.id}-opensearch"
-  description = "Security group for OpenSearch"
-  vpc_id      = var.vpc_id
-
-  ingress_with_source_security_group_id = [
-    {
-      from_port                = 443
-      to_port                  = 443
-      protocol                 = "tcp"
-      description              = "HTTPS from EKS nodes"
-      source_security_group_id = var.eks_node_security_group_id
-    }
-  ]
-
-  egress_with_cidr_blocks = [
-    {
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = "0.0.0.0/0"
-      description = "Allow all egress traffic"
-    }
-  ]
-
-  tags = merge(module.opensearch_env.tags, {
-    Name = "${module.opensearch_env.id}-opensearch"
-  })
-}
-
 module "opensearch" {
   source  = "terraform-aws-modules/opensearch/aws"
   version = "2.5.0"
 
-  domain_name    = "${module.opensearch_env.id}-opensearch"
+  domain_name    = var.domain_name
   engine_version = var.opensearch_engine_version
 
   # Cluster configuration
@@ -77,8 +44,7 @@ module "opensearch" {
 
   # Network
   vpc_options = {
-    subnet_ids         = slice(var.private_subnets, 0, min(var.opensearch_instance_count, 3))
-    security_group_ids = [module.opensearch_sg.security_group_id]
+    subnet_ids = slice(var.private_subnets, 0, min(var.opensearch_instance_count, 3))
   }
 
   # Advanced security options
@@ -105,6 +71,24 @@ module "opensearch" {
   ]
 
   create_access_policy = true
+
+  security_group_rules = {
+    ingress_443 = {
+      type                         = "ingress"
+      from_port                    = 443
+      to_port                      = 443
+      protocol                     = "tcp"
+      description                  = "HTTPS from EKS nodes"
+      referenced_security_group_id = var.eks_node_security_group_id
+    }
+    egress = {
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
+      description = "Allow all egress traffic"
+    }
+  }
 
   tags = module.opensearch_env.tags
 }

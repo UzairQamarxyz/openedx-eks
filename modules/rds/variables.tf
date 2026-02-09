@@ -64,11 +64,23 @@ variable "rds_mysql_db_name" {
 variable "rds_mysql_family" {
   type        = string
   description = "RDS MySQL family."
-  default     = "mysql8.0"
+  default     = "mysql8.4"
 }
 
 variable "rds_mysql_major_engine_version" {
   type        = string
   description = "RDS MySQL major engine version."
-  default     = "8.0"
+  default     = "8.4"
+}
+
+variable "performance_insights_enabled" {
+  type        = bool
+  description = "Whether to enable Performance Insights for RDS."
+  default     = false
+}
+
+variable "multi_az_enabled" {
+  type        = bool
+  description = "Whether to enable Multi-AZ for RDS."
+  default     = true
 }

@@ -5,7 +5,7 @@ module "rds_mysql" {
   vpc_id            = module.vpc.vpc_id
   vpc_cidr          = module.vpc.vpc_cidr
   private_subnets   = module.vpc.private_subnets
-  rds_mysql_db_name = local.rds_name
+  rds_mysql_db_name = replace(local.rds_name, "-", "_")
 
   rds_mysql_engine_version    = var.rds_mysql_engine_version
   rds_mysql_instance_class    = var.rds_mysql_instance_class
@@ -21,9 +21,10 @@ module "redis" {
   source   = "./modules/redis"
   env_vars = var.env_vars
 
+  name                       = local.redis_name
   vpc_id                     = module.vpc.vpc_id
   private_subnets            = module.vpc.private_subnets
-  eks_node_security_group_id = module.eks_cluster.node_security_group_id
+  eks_node_security_group_id = module.eks_cluster.cluster_primary_security_group_id
 
   dns_hosted_zone_name = var.dns_hosted_zone_name
 
@@ -56,9 +57,10 @@ module "opensearch" {
   source   = "./modules/opensearch"
   env_vars = var.env_vars
 
+  domain_name                = local.domain_name
   vpc_id                     = module.vpc.vpc_id
   private_subnets            = module.vpc.private_subnets
-  eks_node_security_group_id = module.eks_cluster.node_security_group_id
+  eks_node_security_group_id = module.eks_cluster.cluster_primary_security_group_id
 
   opensearch_engine_version  = var.opensearch_engine_version
   opensearch_instance_type   = var.opensearch_instance_type

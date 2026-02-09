@@ -10,6 +10,11 @@ EOT
   default     = {}
 }
 
+variable "domain_name" {
+  type        = string
+  description = "Name of the OpenSearch domain."
+}
+
 variable "vpc_id" {
   type        = string
   description = "ID of the VPC where OpenSearch will be created."
@@ -61,4 +66,3 @@ variable "db_master_password" {
   description = "Master password for OpenSearch internal user database."
   sensitive   = true
 }
-

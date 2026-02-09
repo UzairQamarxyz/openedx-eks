@@ -2,12 +2,6 @@ provider "aws" {
   region = var.aws_region
 }
 
-resource "random_string" "bucket_suffix" {
-  length  = 8
-  special = false
-  upper   = false
-}
-
 module "eks_cluster" {
   source   = "./modules/eks"
   env_vars = var.env_vars

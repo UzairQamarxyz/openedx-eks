@@ -12,4 +12,3 @@ output "cluster_primary_security_group_id" {
   description = "Primary EKS cluster security group ID"
   value       = module.eks.cluster_primary_security_group_id
 }
-

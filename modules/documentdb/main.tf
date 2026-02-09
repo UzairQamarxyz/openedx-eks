@@ -12,10 +12,16 @@ module "documentdb" {
   engine_version = var.documentdb_engine_version
 
   # Instances
-  cluster_size       = var.documentdb_instance_count
-  instance_class     = var.documentdb_instance_class
-  cluster_family     = var.documentdb_cluster_family
-  cluster_parameters = []
+  cluster_size   = var.documentdb_instance_count
+  instance_class = var.documentdb_instance_class
+  cluster_family = var.documentdb_cluster_family
+  cluster_parameters = [
+    {
+      name         = "tls"
+      value        = "disabled"
+      apply_method = "pending-reboot"
+    }
+  ]
 
   # Credentials
   manage_master_user_password = true

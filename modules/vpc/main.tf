@@ -27,10 +27,6 @@ module "vpc" {
   tags = module.vpc_env.tags
 }
 
-################################################################################
-# Security Group for Additional Access
-################################################################################
-
 resource "aws_security_group" "additional" {
   name_prefix = "${module.vpc_env.id}-additional"
   description = "Allow TLS inbound traffic"
@@ -41,7 +37,7 @@ resource "aws_security_group" "additional" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [module.vpc.default_vpc_cidr_block]
+    cidr_blocks = [module.vpc.vpc_cidr_block]
   }
 
   egress {
