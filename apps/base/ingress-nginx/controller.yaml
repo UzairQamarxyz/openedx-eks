@@ -1,0 +1,30 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+    name: ingress-nginx-private
+    namespace: ingress-nginx-private
+spec:
+    interval: 1m
+    path: ./ingress-nginx/private/
+    prune: true
+    sourceRef:
+        kind: GitRepository
+        name: centralised-services
+        namespace: flux-system
+    targetNamespace: ingress-nginx-private
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+    name: ingress-nginx-public
+    namespace: ingress-nginx-public
+spec:
+    interval: 1m
+    path: ./ingress-nginx/public/
+    prune: true
+    sourceRef:
+        kind: GitRepository
+        name: centralised-services
+        namespace: flux-system
+    targetNamespace: ingress-nginx-public
