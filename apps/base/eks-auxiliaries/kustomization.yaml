@@ -3,4 +3,4 @@ kind: Kustomization
 metadata:
     name: eks-auxiliaries
 resources:
-    - storageclass-ebs-automode.yaml
+    - cluster-issuer.yaml

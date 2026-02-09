@@ -1,30 +1,33 @@
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
 metadata:
-    name: ingress-nginx-private
-    namespace: ingress-nginx-private
+    name: ingress-nginx
+    namespace: flux-system
 spec:
-    interval: 1m
-    path: ./ingress-nginx/private/
-    prune: true
-    sourceRef:
-        kind: GitRepository
-        name: centralised-services
-        namespace: flux-system
-    targetNamespace: ingress-nginx-private
+    interval: 2h
+    url: https://kubernetes.github.io/ingress-nginx
 ---
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
 metadata:
-    name: ingress-nginx-public
-    namespace: ingress-nginx-public
+    name: ingress-nginx
+    namespace: ingress-nginx
 spec:
-    interval: 1m
-    path: ./ingress-nginx/public/
-    prune: true
-    sourceRef:
-        kind: GitRepository
-        name: centralised-services
-        namespace: flux-system
-    targetNamespace: ingress-nginx-public
+    releaseName: ingress-nginx
+    chart:
+        spec:
+            chart: ingress-nginx
+            version: "4.8.x"
+            sourceRef:
+                kind: HelmRepository
+                name: ingress-nginx
+                namespace: flux-system
+    interval: 1h
+    install:
+        remediation:
+            retries: 3
+    valuesFrom:
+        - kind: ConfigMap
+          name: ingress-nginx
+          valuesKey: ingress-nginx-values
+          optional: true
