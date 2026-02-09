@@ -203,11 +203,6 @@ variable "subscriber_email_addresses" {
   type        = map(list(string))
 }
 
-variable "vpc_cidr" {
-  type        = string
-  description = "CIDR block for the VPC"
-}
-
 variable "public_access_cidrs" {
   type        = list(string)
   description = "List of CIDR blocks for public access (e.g., office IPs)"
