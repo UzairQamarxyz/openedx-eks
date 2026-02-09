@@ -101,3 +101,5 @@ module "eks_cluster" {
 
   assets_bucket_arn = module.buckets["assets"].bucket_arn
 }
+
+
