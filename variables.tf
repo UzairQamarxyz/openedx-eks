@@ -14,11 +14,6 @@ variable "kubernetes_version" {
   description = "Kubernetes version for the EKS cluster"
 }
 
-variable "s3_bucket_names" {
-  type        = list(string)
-  description = "List of S3 bucket names to create (logs, keys, assets)"
-}
-
 variable "auto_mode_node_pools" {
   type        = list(string)
   description = "List of node pools for EKS Auto Mode (e.g., general-purpose, system)"
@@ -155,4 +150,60 @@ variable "db_master_password" {
 variable "dns_hosted_zone_name" {
   type        = string
   description = "DNS hosted zone name for Route53 (e.g., example.com)"
+}
+
+variable "create_aoss_key" {
+  type        = bool
+  description = "Whether to create a KMS key for OpenSearch Service encryption"
+}
+
+variable "create_ebs_key" {
+  type        = bool
+  description = "Whether to create a KMS key for EBS encryption"
+}
+
+variable "create_s3_key" {
+  type        = bool
+  description = "Whether to create a KMS key for S3 encryption"
+}
+
+variable "create_rds_key" {
+  type        = bool
+  description = "Whether to create a KMS key for RDS encryption"
+}
+
+variable "create_efs_key" {
+  type        = bool
+  description = "Whether to create a KMS key for EFS encryption"
+}
+
+variable "create_elasticache_key" {
+  type        = bool
+  description = "Whether to create a KMS key for ElastiCache encryption"
+}
+
+variable "create_firewall_key" {
+  type        = bool
+  description = "Whether to create a KMS key for Firewall encryption"
+}
+
+variable "create_default_key" {
+  type        = bool
+  description = "Whether to create a default KMS key for general use"
+}
+
+variable "bucket_duties" {
+  type        = list(string)
+  description = "List of S3 bucket names to create (e.g., logs, keys, assets)"
+}
+
+
+variable "subscriber_email_addresses" {
+  description = "Subscription emails for events & alerts."
+  type        = map(list(string))
+}
+
+variable "vpc_cidr" {
+  type        = string
+  description = "CIDR block for the VPC"
 }
