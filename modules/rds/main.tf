@@ -1,10 +1,6 @@
-################################################################################
-# RDS MySQL Security Group
-################################################################################
-
 module "rds_mysql_sg" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 5.1"
+  version = "5.3.1"
 
   name        = "${module.rds_env.id}-rds-mysql"
   description = "Security group for RDS MySQL"
@@ -35,21 +31,17 @@ module "rds_mysql_sg" {
   })
 }
 
-################################################################################
-# RDS MySQL - OpenEdX Application Data
-################################################################################
-
 module "rds_mysql" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "> 1"
+  version = "7.1.0"
 
   identifier = "${module.rds_env.id}-mysql"
 
   # Engine
   engine               = "mysql"
   engine_version       = var.rds_mysql_engine_version
-  family               = "mysql8.4"
-  major_engine_version = "8.4"
+  family               = var.rds_mysql_family
+  major_engine_version = var.rds_mysql_major_engine_version
   instance_class       = var.rds_mysql_instance_class
 
   # Storage
@@ -62,7 +54,7 @@ module "rds_mysql" {
   manage_master_user_password = true
 
   # Database
-  db_name  = "openedx"
+  db_name  = var.rds_mysql_db_name
   username = var.db_master_username
   port     = 3306
 

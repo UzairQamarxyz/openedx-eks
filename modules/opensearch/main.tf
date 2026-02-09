@@ -1,10 +1,6 @@
-################################################################################
-# OpenSearch Security Group
-################################################################################
-
 module "opensearch_sg" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 5.1"
+  version = "5.3.1"
 
   name        = "${module.opensearch_env.id}-opensearch"
   description = "Security group for OpenSearch"
@@ -35,13 +31,9 @@ module "opensearch_sg" {
   })
 }
 
-################################################################################
-# OpenSearch - Search and Analytics Engine
-################################################################################
-
 module "opensearch" {
   source  = "terraform-aws-modules/opensearch/aws"
-  version = "> 1"
+  version = "2.5.0"
 
   domain_name    = "${module.opensearch_env.id}-opensearch"
   engine_version = var.opensearch_engine_version

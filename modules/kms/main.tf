@@ -1,6 +1,6 @@
 module "default_kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.1"
+  version = "4.2.0"
 
   description = "KMS key for default encryption"
   key_usage   = "ENCRYPT_DECRYPT"
@@ -33,7 +33,7 @@ module "default_kms" {
 
 module "rds_kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.1"
+  version = "4.2.0"
 
   description = "KMS key for RDS encryption"
   key_usage   = "ENCRYPT_DECRYPT"
@@ -61,7 +61,7 @@ module "rds_kms" {
 
 module "efs_kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.1"
+  version = "4.2.0"
 
   description = "KMS key for EFS encryption"
   key_usage   = "ENCRYPT_DECRYPT"
@@ -89,7 +89,7 @@ module "efs_kms" {
 
 module "elasticache_kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.1"
+  version = "4.2.0"
 
   description = "KMS key for ElastiCache encryption"
   key_usage   = "ENCRYPT_DECRYPT"
@@ -117,7 +117,7 @@ module "elasticache_kms" {
 
 module "ebs_kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.1"
+  version = "4.2.0"
 
   description = "KMS key for EBS encryption"
   key_usage   = "ENCRYPT_DECRYPT"
@@ -145,7 +145,7 @@ module "ebs_kms" {
 
 module "s3_kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.1"
+  version = "4.2.0"
 
   description = "KMS key for S3 encryption"
   key_usage   = "ENCRYPT_DECRYPT"
@@ -173,7 +173,7 @@ module "s3_kms" {
 
 module "aoss_kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.1"
+  version = "4.2.0"
 
   description = "KMS key for OpenSearch Serverless encryption"
   key_usage   = "ENCRYPT_DECRYPT"
@@ -201,7 +201,7 @@ module "aoss_kms" {
 
 module "firewall_kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.1"
+  version = "4.2.0"
 
   description = "KMS key for FireWall Serverless encryption"
   key_usage   = "ENCRYPT_DECRYPT"

@@ -6,8 +6,9 @@ module "eks" {
   kubernetes_version = var.kubernetes_version
 
   # Cluster access
-  endpoint_public_access                   = true
-  enable_cluster_creator_admin_permissions = true
+  endpoint_private_access      = true
+  endpoint_public_access       = length(var.public_access_cidrs) >= 1 ? true : false
+  endpoint_public_access_cidrs = length(var.public_access_cidrs) >= 1 ? var.public_access_cidrs : null
 
   # Encryption
   encryption_config = {
@@ -21,7 +22,9 @@ module "eks" {
     node_pools = var.auto_mode_node_pools
   }
 
-  create_node_iam_role = true
+  create_node_iam_role      = true
+  node_iam_role_name        = "EKSWorkerAutoNodesRole-${var.cluster_name}"
+  node_iam_role_description = "EKS Auto node role"
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
     AWSXRayDaemonWriteAccess     = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess",
@@ -125,7 +128,7 @@ resource "aws_eks_addon" "s3_csi" {
 
 module "openedx_pod_identity" {
   source  = "terraform-aws-modules/eks-pod-identity/aws"
-  version = "~> 1.0"
+  version = "2.7.0"
 
   name = "openedx-s3-access"
 

@@ -1,14 +1,10 @@
-################################################################################
-# DocumentDB - Course and User Data (MongoDB Compatible)
-################################################################################
-
 module "documentdb" {
   source  = "cloudposse/documentdb-cluster/aws"
-  version = ">= 1"
+  version = "1.0.0"
 
   namespace   = module.documentdb_env.namespace
   environment = module.documentdb_env.stage
-  name        = "documentdb"
+  name        = var.name
   delimiter   = module.documentdb_env.delimiter
 
   # Engine
@@ -18,7 +14,7 @@ module "documentdb" {
   # Instances
   cluster_size       = var.documentdb_instance_count
   instance_class     = var.documentdb_instance_class
-  cluster_family     = "docdb5.0"
+  cluster_family     = var.documentdb_cluster_family
   cluster_parameters = []
 
   # Credentials

@@ -56,3 +56,19 @@ variable "default_kms_key_arn" {
   description = "Default KMS key ARN for logs and performance insights."
 }
 
+variable "rds_mysql_db_name" {
+  type        = string
+  description = "Name of the RDS MySQL database."
+}
+
+variable "rds_mysql_family" {
+  type        = string
+  description = "RDS MySQL family."
+  default     = "mysql8.0"
+}
+
+variable "rds_mysql_major_engine_version" {
+  type        = string
+  description = "RDS MySQL major engine version."
+  default     = "8.0"
+}

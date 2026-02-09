@@ -1,10 +1,6 @@
-################################################################################
-# Redis - Caching and Message Broker
-################################################################################
-
 module "redis" {
   source  = "cloudposse/elasticache-redis/aws"
-  version = "> 1"
+  version = "2.0.0"
 
   name                 = "${module.redis_env.id}-redis"
   replication_group_id = "${module.redis_env.id}-redis-replication-group"

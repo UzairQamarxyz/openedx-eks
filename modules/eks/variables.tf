@@ -20,6 +20,11 @@ variable "vpc_cidr" {
   description = "CIDR block of the VPC."
 }
 
+variable "public_access_cidrs" {
+  type        = list(string)
+  description = "List of public subnet IDs for the EKS cluster."
+}
+
 variable "private_subnets" {
   type        = list(string)
   description = "List of private subnet IDs for the EKS cluster."
