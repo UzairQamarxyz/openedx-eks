@@ -102,4 +102,12 @@ module "eks_cluster" {
   assets_bucket_arn = module.buckets["assets"].bucket_arn
 }
 
+module "flux" {
+  source = "./modules/flux"
 
+  env_vars        = var.env_vars
+  git_url         = var.git_repo_url
+  git_branch      = var.git_branch
+  git_path        = "./clusters/${var.env_vars["namespace"]}-${var.env_vars["stage"]}-eks/"
+  ssh_private_key = var.private_key
+}

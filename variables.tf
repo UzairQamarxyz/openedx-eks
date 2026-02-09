@@ -207,3 +207,19 @@ variable "public_access_cidrs" {
   type        = list(string)
   description = "List of CIDR blocks for public access (e.g., office IPs)"
 }
+
+variable "private_key" {
+  description = "Your existing private SSH key (PEM format)"
+  type        = string
+  sensitive   = true
+}
+
+variable "git_repo_url" {
+  description = "URL of the Git repository to clone for EKS worker node setup"
+  type        = string
+}
+
+variable "git_branch" {
+  description = "Branch of the Git repository to use"
+  type        = string
+}
