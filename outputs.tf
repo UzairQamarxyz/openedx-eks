@@ -2,6 +2,7 @@
 output "rds_mysql_username" {
   description = "RDS MySQL master username"
   value       = module.rds_mysql.db_instance_username
+  sensitive   = true
 }
 
 output "rds_mysql_endpoint" {
@@ -23,6 +24,7 @@ output "rds_mysql_master_secret_arn" {
 output "documentdb_username" {
   description = "DocumentDB master username"
   value       = module.documentdb.master_username
+  sensitive   = true
 }
 
 # Redis Outputs

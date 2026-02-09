@@ -139,6 +139,18 @@ resource "aws_eks_addon" "s3_csi" {
   tags = module.eks_env.tags
 }
 
+resource "aws_eks_addon" "cert_manager" {
+  count = var.create_cert_manager ? 1 : 0
+
+  cluster_name                = module.eks.cluster_name
+  addon_name                  = "cert-manager"
+  addon_version               = var.cert_manager_add_on_version
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "PRESERVE"
+
+  tags = module.eks_env.tags
+}
+
 module "openedx_pod_identity" {
   source  = "terraform-aws-modules/eks-pod-identity/aws"
   version = "2.7.0"
