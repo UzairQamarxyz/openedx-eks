@@ -7,8 +7,8 @@ resources:
     - services.yml
     - volumes.yml
     - jobs.yml
-    - secrets.yml
     - ingress.yaml
+    - configmaps.yml
 
 patches:
     - target:
