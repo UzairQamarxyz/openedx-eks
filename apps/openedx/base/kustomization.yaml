@@ -7,7 +7,6 @@ resources:
     - services.yml
     - volumes.yml
     - jobs.yml
-    - ingress.yaml
     - configmaps.yml
 
 patches:
