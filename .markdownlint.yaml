@@ -1,0 +1,25 @@
+# Default state for all rules
+default: true
+
+# MD013/line-length - Line length
+# Tables are excluded since terraform-docs creates
+# non-compliant tables
+MD013:
+  # Number of characters
+  line_length: 100
+  # Number of characters for headings
+  heading_line_length: 80
+  # Number of characters for code blocks
+  code_block_line_length: 125
+  # Include code blocks
+  code_blocks: true
+  # Include tables
+  tables: false
+  # Include headings
+  headings: true
+  # Include headings
+  headers: true
+  # Strict length checking
+  strict: false
+  # Stern length checking
+  stern: false
