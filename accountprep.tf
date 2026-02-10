@@ -32,7 +32,5 @@ module "backup_workload" {
   source   = "./modules/backup"
   env_vars = var.env_vars
 
-  sns_topic_arn             = module.sns.alerts_topic_arn
-  kms_key_arn               = module.kms.default_key_arn
-  use_sqs_for_notifications = true
+  sns_topic_arn = module.sns.alerts_topic_arn
 }

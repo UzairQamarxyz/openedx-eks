@@ -59,7 +59,6 @@ module "opensearch" {
   env_vars = var.env_vars
 
   domain_name                = local.domain_name
-  vpc_id                     = module.vpc.vpc_id
   private_subnets            = module.vpc.private_subnets
   eks_node_security_group_id = module.eks_cluster.cluster_primary_security_group_id
 
