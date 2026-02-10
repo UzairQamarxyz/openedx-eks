@@ -107,6 +107,6 @@ module "flux" {
   env_vars        = var.env_vars
   git_url         = var.git_repo_url
   git_branch      = var.git_branch
-  git_path        = "./clusters/${var.env_vars["namespace"]}-${var.env_vars["stage"]}-eks/"
+  git_path        = "./clusters/eks-uzi-01/"
   ssh_private_key = var.private_key
 }

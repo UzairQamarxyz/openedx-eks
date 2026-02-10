@@ -2,7 +2,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "21.15.1"
 
-  name               = module.eks_env.id
+  name               = var.cluster_name
   kubernetes_version = var.kubernetes_version
 
   # Cluster access
@@ -22,9 +22,10 @@ module "eks" {
     node_pools = var.auto_mode_node_pools
   }
 
-  create_node_iam_role      = true
-  node_iam_role_name        = "EKSWorkerAutoNodesRole-${var.cluster_name}"
-  node_iam_role_description = "EKS Auto node role"
+  create_node_iam_role          = true
+  node_iam_role_name            = "EKSWorkerAutoNodesRole-${var.cluster_name}"
+  node_iam_role_description     = "EKS Auto node role"
+  node_iam_role_use_name_prefix = false
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
     AWSXRayDaemonWriteAccess     = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess",
