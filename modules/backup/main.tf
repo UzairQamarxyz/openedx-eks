@@ -1,3 +1,41 @@
+resource "aws_kms_key" "kms_key" {
+  description         = "KMS Key for Backup Plan Vaults Encryption"
+  is_enabled          = true
+  enable_key_rotation = false
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Sid" : "Allow administration of the key",
+        "Effect" : "Allow",
+        "Principal" : {
+          "AWS" : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        },
+        "Action" : ["kms:*"],
+        "Resource" : "*"
+      },
+      {
+        "Sid" : "Allow use of the key",
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "backup.amazonaws.com"
+        },
+        "Action" : [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ],
+        "Resource" : "*"
+      }
+    ]
+  })
+  multi_region = false
+
+  tags = merge(module.backup_workload_env.tags, var.additional_tags)
+}
+
 # Dynamic Backup Vaults (only create unique vaults)
 resource "aws_backup_vault" "backup_vaults" {
   for_each    = local.backup_vaults

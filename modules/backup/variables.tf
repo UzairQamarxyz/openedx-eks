@@ -315,11 +315,11 @@ variable "opt_in_settings" {
 variable "enable_advanced_features_for_dynamodb_backups" {
   description = "Enable advanced features for DynamoDB backups (e.g., point-in-time recovery)"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "enable_advanced_features_for_efs_backups" {
   description = "Enable advanced features for EFS backups (e.g., backup policies)"
   type        = bool
-  default     = false
+  default     = true
 }

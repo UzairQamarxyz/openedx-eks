@@ -6,9 +6,9 @@ module "vpc" {
   cidr = var.vpc_cidr
 
   azs                  = local.azs
-  public_subnet_names  = ["${var.name}-public-1", "${var.name}-public-2", "${var.name}-public-3"]
+  public_subnet_names  = ["Public Subnet 1", "Public Subnet 2", "Public Subnet 3"]
   public_subnets       = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  private_subnet_names = ["${var.name}-private-1", "${var.name}-private-2", "${var.name}-private-3"]
+  private_subnet_names = ["Private Subnet 1", "Private Subnet 2", "Private Subnet 3"]
   private_subnets      = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
   enable_nat_gateway   = true
