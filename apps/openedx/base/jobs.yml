@@ -1,121 +1,73 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  labels:
-    app.kubernetes.io/component: job
-    app.kubernetes.io/name: lms-job-20260210152554
-  name: lms-job-20260210152554
+    labels:
+        app.kubernetes.io/component: job
+        app.kubernetes.io/name: lms-job-20260210152554
+    name: lms-job-20260210152554
 spec:
-  backoffLimit: 1
-  template:
-    spec:
-      containers:
-      - args:
-        - sh
-        - -e
-        - -c
-        - "dockerize -wait tcp://rds-uzi-01.cuflwwsqmg6m.eu-central-1.rds.amazonaws.com:3306\
-          \ -timeout 20s\ndockerize -wait tcp://copebit-uzi-documentdb-uzi-01.cluster-cuflwwsqmg6m.eu-central-1.docdb.amazonaws.com:27017\
-          \ -timeout 20s\n\necho \"Loading settings $DJANGO_SETTINGS_MODULE\"\n\n\
-          ./manage.py lms migrate\n\n# Create meilisearch indexes\n./manage.py lms\
-          \ shell -c \"import search.meilisearch; search.meilisearch.create_indexes()\"\
-          \n\n# Create oauth2 apps for CMS SSO\n# https://github.com/openedx/edx-platform/blob/master/docs/guides/studio_oauth.rst\n\
-          ./manage.py lms manage_user cms cms@openedx --unusable-password\n./manage.py\
-          \ lms create_dot_application \\\n  --grant-type authorization-code \\\n\
-          \  --redirect-uris \"https://studio.openedx.uzair.copebit-training.net/complete/edx-oauth2/\"\
-          \ \\\n  --client-id cms-sso \\\n  --client-secret 2UfnV3Ncmm1ByzVpRrq0erhl\
-          \ \\\n  --scopes user_id \\\n  --skip-authorization \\\n  --update cms-sso\
-          \ cms\n./manage.py lms create_dot_application \\\n  --grant-type authorization-code\
-          \ \\\n  --redirect-uris \"http://studio.openedx.uzair.copebit-training.net:8001/complete/edx-oauth2/\"\
-          \ \\\n  --client-id cms-sso-dev \\\n  --client-secret 2UfnV3Ncmm1ByzVpRrq0erhl\
-          \ \\\n  --scopes user_id \\\n  --skip-authorization \\\n  --update cms-sso-dev\
-          \ cms\n\n\n# Fix incorrect uploaded file path\nif [ -d /openedx/data/uploads/\
-          \ ]; then\n  if [ -n \"$(ls -A /openedx/data/uploads/)\" ]; then\n    echo\
-          \ \"Migrating LMS uploaded files to shared directory\"\n    mv /openedx/data/uploads/*\
-          \ /openedx/media/\n    rm -rf /openedx/data/uploads/\n  fi\nfi\n\n# Create\
-          \ waffle switches to enable some features, if they have not been explicitly\
-          \ defined before\n# Completion tracking: add green ticks to every completed\
-          \ unit\n(./manage.py lms waffle_switch --list | grep completion.enable_completion_tracking)\
-          \ || ./manage.py lms waffle_switch --create completion.enable_completion_tracking\
-          \ on\n\n# Load default policies for the Open edX Authorization framework\n\
-          # Check if openedx-authz package is installed if not skip loading policies\
-          \ and exit\nif python -c \"import pkg_resources; pkg_resources.require('openedx-authz')\"\
-          \ 2>/dev/null; then\n    ./manage.py lms load_policies\nelse\n    echo \"\
-          openedx-authz package is not installed, skipping loading default policies\"\
-          \n    exit 1\nfi"
-        env:
-        - name: SERVICE_VARIANT
-          value: lms
-        - name: DJANGO_SETTINGS_MODULE
-          value: lms.envs.tutor.production
-        image: docker.io/overhangio/openedx:21.0.0
-        name: lms
-        volumeMounts:
-        - mountPath: /openedx/edx-platform/lms/envs/tutor/
-          name: settings-lms
-        - mountPath: /openedx/edx-platform/cms/envs/tutor/
-          name: settings-cms
-        - mountPath: /openedx/config
-          name: config
-      restartPolicy: Never
-      volumes:
-      - configMap:
-          name: openedx-settings-lms
-        name: settings-lms
-      - configMap:
-          name: openedx-settings-cms
-        name: settings-cms
-      - configMap:
-          name: openedx-config
-        name: config
-  ttlSecondsAfterFinished: 3600
+    backoffLimit: 1
+    template:
+        spec:
+            containers:
+                - args:
+                      - sh
+                      - -e
+                      - -c
+                      - "dockerize -wait tcp://rds-uzi-01.cuflwwsqmg6m.eu-central-1.rds.amazonaws.com:3306\
+                        \ -timeout 20s\ndockerize -wait tcp://copebit-uzi-documentdb-uzi-01.cluster-cuflwwsqmg6m.eu-central-1.docdb.amazonaws.com:27017\
+                        \ -timeout 20s\n\necho \"Loading settings $DJANGO_SETTINGS_MODULE\"\n\n\
+                        ./manage.py lms migrate\n\n# Create meilisearch indexes\n./manage.py lms\
+                        \ shell -c \"import search.meilisearch; search.meilisearch.create_indexes()\"\
+                        \n\n# Create oauth2 apps for CMS SSO\n# https://github.com/openedx/edx-platform/blob/master/docs/guides/studio_oauth.rst\n\
+                        ./manage.py lms manage_user cms cms@openedx --unusable-password\n./manage.py\
+                        \ lms create_dot_application \\\n  --grant-type authorization-code \\\n\
+                        \  --redirect-uris \"https://studio.openedx.uzair.copebit-training.net/complete/edx-oauth2/\"\
+                        \ \\\n  --client-id cms-sso \\\n  --client-secret 2UfnV3Ncmm1ByzVpRrq0erhl\
+                        \ \\\n  --scopes user_id \\\n  --skip-authorization \\\n  --update cms-sso\
+                        \ cms\n./manage.py lms create_dot_application \\\n  --grant-type authorization-code\
+                        \ \\\n  --redirect-uris \"http://studio.openedx.uzair.copebit-training.net:8001/complete/edx-oauth2/\"\
+                        \ \\\n  --client-id cms-sso-dev \\\n  --client-secret 2UfnV3Ncmm1ByzVpRrq0erhl\
+                        \ \\\n  --scopes user_id \\\n  --skip-authorization \\\n  --update cms-sso-dev\
+                        \ cms\n\n\n# Fix incorrect uploaded file path\nif [ -d /openedx/data/uploads/\
+                        \ ]; then\n  if [ -n \"$(ls -A /openedx/data/uploads/)\" ]; then\n    echo\
+                        \ \"Migrating LMS uploaded files to shared directory\"\n    mv /openedx/data/uploads/*\
+                        \ /openedx/media/\n    rm -rf /openedx/data/uploads/\n  fi\nfi\n\n# Create\
+                        \ waffle switches to enable some features, if they have not been explicitly\
+                        \ defined before\n# Completion tracking: add green ticks to every completed\
+                        \ unit\n(./manage.py lms waffle_switch --list | grep completion.enable_completion_tracking)\
+                        \ || ./manage.py lms waffle_switch --create completion.enable_completion_tracking\
+                        \ on\n\n# Load default policies for the Open edX Authorization framework\n\
+                        # Check if openedx-authz package is installed if not skip loading policies\
+                        \ and exit\nif python -c \"import pkg_resources; pkg_resources.require('openedx-authz')\"\
+                        \ 2>/dev/null; then\n    ./manage.py lms load_policies\nelse\n    echo \"\
+                        openedx-authz package is not installed, skipping loading default policies\"\
+                        \n    exit 1\nfi"
+                  env:
+                      - name: SERVICE_VARIANT
+                        value: lms
+                      - name: DJANGO_SETTINGS_MODULE
+                        value: lms.envs.tutor.production
+                  image: docker.io/overhangio/openedx:21.0.0
+                  name: lms
+                  volumeMounts:
+                      - mountPath: /openedx/edx-platform/lms/envs/tutor/
+                        name: settings-lms
+                      - mountPath: /openedx/edx-platform/cms/envs/tutor/
+                        name: settings-cms
+                      - mountPath: /openedx/config
+                        name: config
+            restartPolicy: Never
+            volumes:
+                - configMap:
+                      name: openedx-settings-lms
+                  name: settings-lms
+                - configMap:
+                      name: openedx-settings-cms
+                  name: settings-cms
+                - configMap:
+                      name: openedx-config
+                  name: config
+    ttlSecondsAfterFinished: 3600
 ---
-apiVersion: batch/v1
-kind: Job
-metadata:
-  labels:
-    app.kubernetes.io/component: job
-  name: cms-job
-spec:
-  template:
-    spec:
-      containers:
-      - env:
-        - name: SERVICE_VARIANT
-          value: cms
-        - name: DJANGO_SETTINGS_MODULE
-          value: cms.envs.tutor.production
-        image: docker.io/overhangio/openedx:21.0.0
-        name: cms
-        volumeMounts:
-        - mountPath: /openedx/edx-platform/lms/envs/tutor/
-          name: settings-lms
-        - mountPath: /openedx/edx-platform/cms/envs/tutor/
-          name: settings-cms
-        - mountPath: /openedx/config
-          name: config
-      restartPolicy: Never
-      volumes:
-      - configMap:
-          name: openedx-settings-lms
-        name: settings-lms
-      - configMap:
-          name: openedx-settings-cms
-        name: settings-cms
-      - configMap:
-          name: openedx-config
-        name: config
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  labels:
-    app.kubernetes.io/component: job
-  name: mysql-job
-spec:
-  template:
-    spec:
-      containers:
-      - image: docker.io/mysql:8.4.0
-        name: mysql
-      restartPolicy: Never
+
