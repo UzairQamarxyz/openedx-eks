@@ -12,19 +12,19 @@ metadata:
         nginx.ingress.kubernetes.io/ssl-redirect: "true"
 
         # Open edX specific tweaks
-        nginx.ingress.kubernetes.io/proxy-body-size: "500m" # Allow large file uploads (videos/scorm)
-        nginx.ingress.kubernetes.io/proxy-buffer-size: "16k" # Fixes some large header issues with Django
+        nginx.ingress.kubernetes.io/proxy-body-size: "500m" # Allow large file uploads
+        nginx.ingress.kubernetes.io/proxy-buffer-size: "16k" # Fix django header issues
 spec:
     tls:
         - hosts:
-              - lms.openedx.uzair.copebit-training.net
+              - openedx.uzair.copebit-training.net
               - studio.openedx.uzair.copebit-training.net
               - apps.openedx.uzair.copebit-training.net
-          secretName: openedx-tls-secret # Cert-manager will store the cert here
+          secretName: openedx-tls-secret
 
     rules:
-        # 1. LMS Routing
-        - host: lms.openedx.uzair.copebit-training.net
+        # 1. LMS Routing (FIXED HOSTNAME)
+        - host: openedx.uzair.copebit-training.net
           http:
               paths:
                   - path: /
