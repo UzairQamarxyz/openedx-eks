@@ -11,14 +11,14 @@ locals {
   ])
   email_nums = flatten([
     for types in local.sns_keys : {
-      numbers = lookup(var.subscriber_email_addresses, types)[0] == null ? 0 : length(lookup(var.subscriber_email_addresses, types))
+      numbers = lookup(var.subscriber_email_addresses, types, null)[0] == null ? 0 : length(lookup(var.subscriber_email_addresses, types, null))
       type    = types
     }
   ])
   sns_emails_config = flatten([
     for ind, types in local.sns_keys : [
       for num in range(0, local.email_nums[ind].numbers, 1) : {
-        email_id = element(lookup(var.subscriber_email_addresses, types), num)
+        email_id = element(lookup(var.subscriber_email_addresses, types, null), num)
         type     = types
       }
     ]

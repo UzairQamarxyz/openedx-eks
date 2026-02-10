@@ -1,13 +1,14 @@
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| terraform | >= 1.0 |
+| aws | >= 6.0.0 |
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| aws | n/a |
+No providers.
 
 ## Modules
 
@@ -18,16 +19,13 @@ No requirements.
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [aws_route53_zone.selected](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/route53_zone) | data source |
+No resources.
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | db\_master\_password | Master password used as Redis auth token. | `string` | n/a | yes |
-| dns\_hosted\_zone\_name | DNS hosted zone name for Route53 (e.g., example.com). | `string` | n/a | yes |
 | eks\_node\_security\_group\_id | Security group ID for EKS nodes allowed to access Redis. | `string` | n/a | yes |
 | elasticache\_kms\_key\_arn | KMS key ARN for ElastiCache encryption. | `string` | n/a | yes |
 | env\_vars | Map of environment variables to be used for labeling and tagging resources. Expected keys include: - "namespace": The namespace for resource labeling (default: "alnafi") - "stage": The stage/environment (e.g., "dev", "test", "prod") - "delimiter": The delimiter to use in labels (default: "-") | `map(string)` | `{}` | no |

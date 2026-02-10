@@ -15,11 +15,6 @@ variable "domain_name" {
   description = "Name of the OpenSearch domain."
 }
 
-variable "vpc_id" {
-  type        = string
-  description = "ID of the VPC where OpenSearch will be created."
-}
-
 variable "private_subnets" {
   type        = list(string)
   description = "List of private subnet IDs for OpenSearch."

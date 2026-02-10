@@ -1,7 +1,10 @@
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| terraform | >= 1.0 |
+| aws | >= 6.0.0 |
 
 ## Providers
 
@@ -33,7 +36,6 @@ No resources.
 | opensearch\_instance\_type | Instance type for OpenSearch. | `string` | n/a | yes |
 | opensearch\_kms\_key\_arn | KMS key ARN for OpenSearch encryption at rest. | `string` | n/a | yes |
 | private\_subnets | List of private subnet IDs for OpenSearch. | `list(string)` | n/a | yes |
-| vpc\_id | ID of the VPC where OpenSearch will be created. | `string` | n/a | yes |
 
 ## Outputs
 

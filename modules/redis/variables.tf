@@ -30,11 +30,6 @@ variable "eks_node_security_group_id" {
   description = "Security group ID for EKS nodes allowed to access Redis."
 }
 
-variable "dns_hosted_zone_name" {
-  type        = string
-  description = "DNS hosted zone name for Route53 (e.g., example.com)."
-}
-
 variable "redis_cluster_size" {
   type        = number
   description = "Number of nodes for Redis."

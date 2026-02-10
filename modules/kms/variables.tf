@@ -58,15 +58,3 @@ variable "create_aoss_key" {
   default     = false
 }
 
-variable "additional_tags" {
-  description = "Additional tags to apply to the KMS CMKs"
-  type        = map(string)
-  default     = {}
-}
-
-variable "firewall_cross_account_access_ids" {
-  description = "A list of AWS account IDs that are allowed to access the Network Firewall KMS key from other accounts."
-  type        = list(string)
-  default     = []
-}
-

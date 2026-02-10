@@ -45,7 +45,6 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| additional\_tags | Additional tags to apply to the KMS CMKs | `map(string)` | `{}` | no |
 | create\_aoss\_key | Set to true if you want to create an amazon opensearch serverless service KMS CMK. | `bool` | `false` | no |
 | create\_default\_key | Set to true if you want to create a default KMS CMK. | `bool` | `true` | no |
 | create\_ebs\_key | Set to true if you want to create an EBS KMS CMK. | `bool` | `true` | no |
@@ -55,7 +54,6 @@
 | create\_rds\_key | Set to true if you want to create a RDS KMS CMK. | `bool` | `false` | no |
 | create\_s3\_key | Set to true if you want to create a S3 KMS CMK. | `bool` | `true` | no |
 | env\_vars | Map of environment variables to be used for labeling and tagging resources. Expected keys include: - "namespace": The namespace for resource labeling (default: "alnafi") - "stage": The stage/environment (e.g., "dev", "test", "prod - "delimiter": The delimiter to use in labels (default: "-") | `map(string)` | `{}` | no |
-| firewall\_cross\_account\_access\_ids | A list of AWS account IDs that are allowed to access the Network Firewall KMS key from other accounts. | `list(string)` | `[]` | no |
 
 ## Outputs
 

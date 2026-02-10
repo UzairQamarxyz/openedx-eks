@@ -227,13 +227,3 @@ resource "aws_security_group_rule" "coredns_rule" {
   to_port                  = 53
   source_security_group_id = module.eks.cluster_primary_security_group_id
 }
-
-resource "aws_security_group_rule" "cluster_egress_all" {
-  description       = "Allow cluster control plane to communicate out"
-  protocol          = "-1"
-  from_port         = 0
-  to_port           = 0
-  type              = "egress"
-  security_group_id = module.eks.cluster_security_group_id
-  cidr_blocks       = ["0.0.0.0/0"]
-}

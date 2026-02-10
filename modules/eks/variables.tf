@@ -131,12 +131,6 @@ variable "aws_s3_csi_driver_add_on_version" {
   default     = null
 }
 
-variable "add_on_resolve_conflicts" {
-  type        = string
-  description = "Strategy to use when conflicts are encountered during addon creation or update (e.g., NONE, OVERWRITE, PRESERVE)."
-  default     = "OVERWRITE"
-}
-
 variable "default_kms_key_arn" {
   type        = string
   description = "Default KMS key ARN used for EKS encryption and CloudWatch logs."
