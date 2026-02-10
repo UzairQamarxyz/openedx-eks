@@ -1,0 +1,318 @@
+# Source: karpenter-node-definitions/templates/nodeclass-auto.yaml
+apiVersion: eks.amazonaws.com/v1
+kind: NodeClass
+metadata:
+    name: "cb-helm-auto-nodeclass"
+spec:
+    role: "EKSWorkerAutoNodesRole-eks-test-01"
+    securityGroupSelectorTerms:
+        - tags:
+              Name: "eks-test-01-node-sg"
+              karpenter.sh/discovery: "eks-test-01"
+    subnetSelectorTerms:
+        - tags:
+              Name: Private*
+              karpenter.sh/discovery: "eks-test-01"
+    snatPolicy: "Random"
+    networkPolicy: "DefaultAllow"
+    networkPolicyEventLogs: "Enabled"
+    ephemeralStorage:
+        size: "20Gi"
+        iops: 3000
+        throughput: 125
+    tags:
+        Name: "auto-cb-helm-auto-nodeclass-eks-test-01"
+        backup: "none"
+        "ManagedBy": "Karpenter"
+---
+# Source: karpenter-node-definitions/templates/nodepool-auto.yaml
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+    name: "cb-helm-auto-nodepool-spot-amd"
+spec:
+    disruption:
+        consolidateAfter: "15m"
+        consolidationPolicy: "WhenEmptyOrUnderutilized"
+    limits:
+        cpu: "1000"
+        memory: "4000Gi"
+    template:
+        metadata:
+            labels: {}
+        spec:
+            nodeClassRef:
+                group: "eks.amazonaws.com"
+                kind: "NodeClass"
+                name: "cb-helm-auto-nodeclass"
+            requirements:
+                - key: kubernetes.io/arch
+                  operator: In
+                  values:
+                      - amd64
+                - key: eks.amazonaws.com/compute-type
+                  operator: In
+                  values: ["auto"]
+                - key: karpenter.sh/capacity-type
+                  operator: In
+                  values:
+                      - spot
+                - key: eks.amazonaws.com/instance-category
+                  operator: In
+                  values:
+                      - c
+                      - m
+                      - r
+                - key: eks.amazonaws.com/instance-generation
+                  operator: Gt
+                  values: ["4"]
+                - key: eks.amazonaws.com/instance-cpu
+                  operator: In
+                  values:
+                      - "1"
+                      - "2"
+                      - "4"
+                      - "8"
+                      - "16"
+                      - "32"
+                      - "36"
+                      - "48"
+                      - "64"
+                      - "72"
+                      - "96"
+                      - "128"
+                      - "192"
+                      - "256"
+                      - "512"
+                      - "1024"
+                - key: topology.kubernetes.io/zone
+                  operator: In
+                  values:
+                      - eu-central-1a
+                      - eu-central-1b
+                      - eu-central-1c
+                - key: kubernetes.io/os
+                  operator: In
+                  values: ["linux"]
+            expireAfter: "480h"
+            taints: []
+    weight: 10
+---
+# Source: karpenter-node-definitions/templates/nodepool-auto.yaml
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+    name: "cb-helm-auto-nodepool-ondemand-amd"
+spec:
+    disruption:
+        consolidateAfter: "15m"
+        consolidationPolicy: "WhenEmptyOrUnderutilized"
+    limits:
+        cpu: "1000"
+        memory: "4000Gi"
+    template:
+        metadata:
+            labels: {}
+        spec:
+            nodeClassRef:
+                group: "eks.amazonaws.com"
+                kind: "NodeClass"
+                name: "cb-helm-auto-nodeclass"
+            requirements:
+                - key: kubernetes.io/arch
+                  operator: In
+                  values:
+                      - amd64
+                - key: eks.amazonaws.com/compute-type
+                  operator: In
+                  values: ["auto"]
+                - key: karpenter.sh/capacity-type
+                  operator: In
+                  values:
+                      - on-demand
+                - key: eks.amazonaws.com/instance-category
+                  operator: In
+                  values:
+                      - c
+                      - m
+                      - r
+                - key: eks.amazonaws.com/instance-generation
+                  operator: Gt
+                  values: ["4"]
+                - key: eks.amazonaws.com/instance-cpu
+                  operator: In
+                  values:
+                      - "1"
+                      - "2"
+                      - "4"
+                      - "8"
+                      - "16"
+                      - "32"
+                      - "36"
+                      - "48"
+                      - "64"
+                      - "72"
+                      - "96"
+                      - "128"
+                      - "192"
+                      - "256"
+                      - "512"
+                      - "1024"
+                - key: topology.kubernetes.io/zone
+                  operator: In
+                  values:
+                      - eu-central-1a
+                      - eu-central-1b
+                      - eu-central-1c
+                - key: kubernetes.io/os
+                  operator: In
+                  values: ["linux"]
+            expireAfter: "480h"
+            taints: []
+    weight: 6
+---
+# Source: karpenter-node-definitions/templates/nodepool-auto.yaml
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+    name: "cb-helm-auto-nodepool-spot-arm"
+spec:
+    disruption:
+        consolidateAfter: "15m"
+        consolidationPolicy: "WhenEmptyOrUnderutilized"
+    limits:
+        cpu: "1000"
+        memory: "4000Gi"
+    template:
+        metadata:
+            labels: {}
+        spec:
+            nodeClassRef:
+                group: "eks.amazonaws.com"
+                kind: "NodeClass"
+                name: "cb-helm-auto-nodeclass"
+            requirements:
+                - key: kubernetes.io/arch
+                  operator: In
+                  values:
+                      - arm64
+                - key: eks.amazonaws.com/compute-type
+                  operator: In
+                  values: ["auto"]
+                - key: karpenter.sh/capacity-type
+                  operator: In
+                  values:
+                      - spot
+                - key: eks.amazonaws.com/instance-category
+                  operator: In
+                  values:
+                      - c
+                      - m
+                      - r
+                - key: eks.amazonaws.com/instance-generation
+                  operator: Gt
+                  values: ["4"]
+                - key: eks.amazonaws.com/instance-cpu
+                  operator: In
+                  values:
+                      - "1"
+                      - "2"
+                      - "4"
+                      - "8"
+                      - "16"
+                      - "32"
+                      - "36"
+                      - "48"
+                      - "64"
+                      - "72"
+                      - "96"
+                      - "128"
+                      - "192"
+                      - "256"
+                      - "512"
+                      - "1024"
+                - key: topology.kubernetes.io/zone
+                  operator: In
+                  values:
+                      - eu-central-1a
+                      - eu-central-1b
+                      - eu-central-1c
+                - key: kubernetes.io/os
+                  operator: In
+                  values: ["linux"]
+            expireAfter: "480h"
+            taints: []
+    weight: 4
+---
+# Source: karpenter-node-definitions/templates/nodepool-auto.yaml
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+    name: "cb-helm-auto-nodepool-ondemand-arm"
+spec:
+    disruption:
+        consolidateAfter: "15m"
+        consolidationPolicy: "WhenEmptyOrUnderutilized"
+    limits:
+        cpu: "1000"
+        memory: "4000Gi"
+    template:
+        metadata:
+            labels: {}
+        spec:
+            nodeClassRef:
+                group: "eks.amazonaws.com"
+                kind: "NodeClass"
+                name: "cb-helm-auto-nodeclass"
+            requirements:
+                - key: kubernetes.io/arch
+                  operator: In
+                  values:
+                      - arm64
+                - key: eks.amazonaws.com/compute-type
+                  operator: In
+                  values: ["auto"]
+                - key: karpenter.sh/capacity-type
+                  operator: In
+                  values:
+                      - on-demand
+                - key: eks.amazonaws.com/instance-category
+                  operator: In
+                  values:
+                      - c
+                      - m
+                      - r
+                - key: eks.amazonaws.com/instance-generation
+                  operator: Gt
+                  values: ["4"]
+                - key: eks.amazonaws.com/instance-cpu
+                  operator: In
+                  values:
+                      - "1"
+                      - "2"
+                      - "4"
+                      - "8"
+                      - "16"
+                      - "32"
+                      - "36"
+                      - "48"
+                      - "64"
+                      - "72"
+                      - "96"
+                      - "128"
+                      - "192"
+                      - "256"
+                      - "512"
+                      - "1024"
+                - key: topology.kubernetes.io/zone
+                  operator: In
+                  values:
+                      - eu-central-1a
+                      - eu-central-1b
+                      - eu-central-1c
+                - key: kubernetes.io/os
+                  operator: In
+                  values: ["linux"]
+            expireAfter: "480h"
+            taints: []
+    weight: 2
