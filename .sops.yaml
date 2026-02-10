@@ -3,5 +3,5 @@ creation_rules:
       encrypted_regex: "^(data|stringData)$"
       age: "age145kp7g8uere4ds4drqqvrs36tgc639gvdcateu9r45g98zmn752suez9jp"
     - path_regex: .*.enc.yaml
-      encrypted_regex: "^(data|stringData)$" # <--- THIS LINE IS CRITICAL
+      encrypted_regex: "^(data|stringData)$"
       age: "age145kp7g8uere4ds4drqqvrs36tgc639gvdcateu9r45g98zmn752suez9jp"
