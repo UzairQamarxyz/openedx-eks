@@ -23,12 +23,4 @@ locals {
       ]
     }
   }
-
-  backup_fail_param_val = jsonencode({
-    for vault_name, vault in local.backup_vaults : vault.name => {}
-  })
-
-  target_id       = var.use_sqs_for_notifications ? "BackupFailedAlertSQS" : "BackupFailedAlertSNS"
-  current_region  = data.aws_region.current.region
-  current_account = data.aws_caller_identity.current.account_id
 }

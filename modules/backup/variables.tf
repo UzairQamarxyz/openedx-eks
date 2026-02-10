@@ -288,17 +288,6 @@ variable "max_backup_runtime" {
   default     = 720
 }
 
-variable "kms_key_arn" {
-  description = "KMS key ARN for CloudWatch logs encryption"
-  type        = string
-}
-
-variable "excluded_resources_for_backup_alert_lambda" {
-  description = "List of resource ARNs to exclude from backup failure alerts"
-  type        = list(string)
-  default     = []
-}
-
 variable "opt_in_settings" {
   description = "Resource type opt-in preferences for AWS Backup"
   type        = map(bool)
