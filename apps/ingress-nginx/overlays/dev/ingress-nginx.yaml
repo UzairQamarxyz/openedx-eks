@@ -37,7 +37,7 @@ data:
             controllerValue: k8s.io/ingress-nginx
             default: false
             enabled: true
-            name: nginx-public
+            name: ingress-nginx
           replicaCount: 1
           service:
             annotations:
