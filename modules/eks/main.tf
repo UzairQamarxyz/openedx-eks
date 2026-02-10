@@ -88,7 +88,8 @@ module "eks" {
   cloudwatch_log_group_retention_in_days = var.cloudwatch_log_group_retention_days
   cloudwatch_log_group_kms_key_id        = var.default_kms_key_arn
 
-  tags = module.eks_env.tags
+  cluster_tags = merge(module.eks_env.tags, { backup = var.backup_type })
+  tags         = merge(module.eks_env.tags, { backup = var.backup_type })
 }
 
 resource "aws_eks_addon" "cloudwatch_observability" {

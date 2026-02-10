@@ -149,3 +149,8 @@ variable "assets_bucket_arn" {
   default     = null
 }
 
+variable "backup_type" {
+  type        = string
+  description = "Type of backup strategy to use for the EKS cluster (e.g., 'short', 'long', 'none')."
+  default     = "short"
+}
