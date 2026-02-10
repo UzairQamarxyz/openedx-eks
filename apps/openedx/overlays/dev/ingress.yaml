@@ -5,7 +5,7 @@ metadata:
     namespace: openedx
     annotations:
         # Traffic Routing
-        kubernetes.io/ingress.class: "nginx-nginx"
+        kubernetes.io/ingress.class: "nginx-ingress"
 
         # TLS / SSL (Cert-Manager)
         cert-manager.io/cluster-issuer: "letsencrypt-prod"
