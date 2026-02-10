@@ -151,6 +151,18 @@ resource "aws_eks_addon" "cert_manager" {
   tags = module.eks_env.tags
 }
 
+resource "aws_eks_addon" "metrics_server" {
+  count = var.create_metrics_server ? 1 : 0
+
+  cluster_name                = module.eks.cluster_name
+  addon_name                  = "metrics-server"
+  addon_version               = var.metrics_server_add_on_version
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "PRESERVE"
+  tags                        = module.eks_env.tags
+}
+
+
 module "openedx_pod_identity" {
   source  = "terraform-aws-modules/eks-pod-identity/aws"
   version = "2.7.0"

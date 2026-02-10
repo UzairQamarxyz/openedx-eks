@@ -42,6 +42,10 @@ module "rds_mysql" {
   major_engine_version = var.rds_mysql_major_engine_version
   instance_class       = var.rds_mysql_instance_class
 
+  parameter_group_use_name_prefix = false
+  option_group_use_name_prefix    = false
+  db_subnet_group_use_name_prefix = false
+
   # Storage
   allocated_storage     = var.rds_mysql_allocated_storage
   max_allocated_storage = var.rds_mysql_allocated_storage * 2

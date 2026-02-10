@@ -43,7 +43,7 @@ resource "helm_release" "flux_instance" {
           url        = var.git_url
           ref        = var.git_branch
           path       = var.git_path
-          pullSecret = "flux-ssh-credentials"
+          pullSecret = kubectl_manifest.flux_ssh_auth.metadata[0].name
         }
       }
     })

@@ -89,6 +89,18 @@ variable "create_cert_manager" {
   default     = true
 }
 
+variable "create_metrics_server" {
+  type        = bool
+  description = "Create metrics-server add-on."
+  default     = true
+}
+
+variable "metrics_server_add_on_version" {
+  type        = string
+  description = "Add-on version for metrics-server (null for latest)."
+  default     = null
+}
+
 variable "cert_manager_add_on_version" {
   type        = string
   description = "Add-on version for cert-manager (null for latest)."
@@ -117,6 +129,12 @@ variable "aws_s3_csi_driver_add_on_version" {
   type        = string
   description = "Add-on version for aws-s3-csi-driver (null for latest)."
   default     = null
+}
+
+variable "add_on_resolve_conflicts" {
+  type        = string
+  description = "Strategy to use when conflicts are encountered during addon creation or update (e.g., NONE, OVERWRITE, PRESERVE)."
+  default     = "OVERWRITE"
 }
 
 variable "default_kms_key_arn" {
