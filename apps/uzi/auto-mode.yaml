@@ -4,15 +4,15 @@ kind: NodeClass
 metadata:
     name: "cb-helm-auto-nodeclass"
 spec:
-    role: "EKSWorkerAutoNodesRole-copebit-uzi-eks"
+    role: "EKSWorkerAutoNodesRole-eks-uzi-01"
     securityGroupSelectorTerms:
         - tags:
-              Name: "copebit-uzi-eks-node-sg"
-              karpenter.sh/discovery: "copebit-uzi-eks"
+              Name: "eks-uzi-01-node-sg"
+              karpenter.sh/discovery: "eks-uzi-01"
     subnetSelectorTerms:
         - tags:
               Name: Private*
-              karpenter.sh/discovery: "copebit-uzi-eks"
+              karpenter.sh/discovery: "eks-uzi-01"
     snatPolicy: "Random"
     networkPolicy: "DefaultAllow"
     networkPolicyEventLogs: "Enabled"
@@ -21,7 +21,7 @@ spec:
         iops: 3000
         throughput: 125
     tags:
-        Name: "auto-cb-helm-auto-nodeclass-copebit-uzi-eks"
+        Name: "auto-cb-helm-auto-nodeclass-eks-uzi-01"
         backup: "none"
         "ManagedBy": "Karpenter"
 ---
