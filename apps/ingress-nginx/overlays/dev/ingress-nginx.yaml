@@ -6,48 +6,47 @@ metadata:
     namespace: ingress-nginx
 data:
     ingress-nginx-values: |
-        ingress-nginx:
-          commonLabels: {}
-          controller:
-            affinity:
-              podAntiAffinity:
-                requiredDuringSchedulingIgnoredDuringExecution:
-                - labelSelector:
-                    matchExpressions:
-                    - key: app.kubernetes.io/name
-                      operator: In
-                      values:
-                      - ingress-nginx
-                    - key: app.kubernetes.io/instance
-                      operator: In
-                      values:
-                      - ingress-nginx
-                    - key: app.kubernetes.io/component
-                      operator: In
-                      values:
-                      - controller
-                  topologyKey: topology.kubernetes.io/zone
-            allowSnippetAnnotations: true
-            extraArgs:
-              update-status-on-shutdown: "false"
-            image:
-              tag: v1.11.5
-            ingressClass: ingress-nginx
-            ingressClassByName: true
-            ingressClassResource:
-              controllerValue: k8s.io/ingress-nginx
-              default: false
-              enabled: true
-              name: nginx-public
-            replicaCount: 1
-            service:
-              annotations:
-                service.beta.kubernetes.io/aws-load-balancer-attributes: load_balancing.cross_zone.enabled=true
-                service.beta.kubernetes.io/aws-load-balancer-name: alnafi-test-eks-01-public-lb
-                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
-                service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
-                service.beta.kubernetes.io/aws-load-balancer-type: external
-                service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
-              externalTrafficPolicy: Local
-          fullnameOverride: ingress-nginx
-          namespaceOverride: ingress-nginx
+        commonLabels: {}
+        controller:
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - ingress-nginx
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - ingress-nginx
+                  - key: app.kubernetes.io/component
+                    operator: In
+                    values:
+                    - controller
+                topologyKey: topology.kubernetes.io/zone
+          allowSnippetAnnotations: true
+          extraArgs:
+            update-status-on-shutdown: "false"
+          image:
+            tag: v1.11.5
+          ingressClass: ingress-nginx
+          ingressClassByName: true
+          ingressClassResource:
+            controllerValue: k8s.io/ingress-nginx
+            default: false
+            enabled: true
+            name: nginx-public
+          replicaCount: 1
+          service:
+            annotations:
+              service.beta.kubernetes.io/aws-load-balancer-attributes: load_balancing.cross_zone.enabled=true
+              service.beta.kubernetes.io/aws-load-balancer-name: alnafi-test-eks-01-public-lb
+              service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+              service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+              service.beta.kubernetes.io/aws-load-balancer-type: external
+              service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
+            externalTrafficPolicy: Local
+        fullnameOverride: ingress-nginx
+        namespaceOverride: ingress-nginx
