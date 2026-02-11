@@ -1,87 +1,67 @@
-# Removing as per the requirement
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#     name: caddy
-#     labels:
-#         app.kubernetes.io/name: caddy
-# spec:
-#     type: ClusterIP
-#     ports:
-#         - port: 80
-#           name: http
-#     selector:
-#         app.kubernetes.io/name: caddy
-
+apiVersion: v1
+kind: Service
+metadata:
+  name: cms
+  labels:
+    app.kubernetes.io/name: cms
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: cms
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: cms
-    labels:
-        app.kubernetes.io/name: cms
+  name: lms
+  labels:
+    app.kubernetes.io/name: lms
 spec:
-    type: ClusterIP
-    ports:
-        - port: 8000
-          protocol: TCP
-    selector:
-        app.kubernetes.io/name: cms
+  type: ClusterIP
+  ports:
+    - port: 8000
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: lms
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: lms
-    labels:
-        app.kubernetes.io/name: lms
+  name: meilisearch
+  labels:
+    app.kubernetes.io/name: meilisearch
 spec:
-    type: ClusterIP
-    ports:
-        - port: 8000
-          protocol: TCP
-    selector:
-        app.kubernetes.io/name: lms
-
+  type: ClusterIP
+  ports:
+    - port: 7700
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: meilisearch
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: meilisearch
-    labels:
-        app.kubernetes.io/name: meilisearch
+  name: smtp
+  labels:
+    app.kubernetes.io/name: smtp
 spec:
-    type: ClusterIP
-    ports:
-        - port: 7700
-          protocol: TCP
-    selector:
-        app.kubernetes.io/name: meilisearch
-
+  type: ClusterIP
+  ports:
+    - port: 8025
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: smtp
 ---
 apiVersion: v1
 kind: Service
 metadata:
-    name: smtp
-    labels:
-        app.kubernetes.io/name: smtp
+  name: mfe
 spec:
-    type: ClusterIP
-    ports:
-        - port: 8025
-          protocol: TCP
-    selector:
-        app.kubernetes.io/name: smtp
-
----
-apiVersion: v1
-kind: Service
-metadata:
-    name: mfe
-spec:
-    type: NodePort
-    ports:
-        - port: 8002
-          protocol: TCP
-    selector:
-        app.kubernetes.io/name: mfe
+  type: ClusterIP
+  ports:
+    - port: 8002
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: mfe

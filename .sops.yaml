@@ -2,6 +2,9 @@ creation_rules:
     - path_regex: apps/openedx/base/configmaps.yml
       encrypted_regex: "^(data|stringData)$"
       age: "age145kp7g8uere4ds4drqqvrs36tgc639gvdcateu9r45g98zmn752suez9jp"
+    - path_regex: apps/openedx/overlays/.*/secrets.yaml
+      encrypted_regex: "^(data|stringData)$"
+      age: "age145kp7g8uere4ds4drqqvrs36tgc639gvdcateu9r45g98zmn752suez9jp"
     - path_regex: .*.enc.yaml
       encrypted_regex: "^(data|stringData)$"
       age: "age145kp7g8uere4ds4drqqvrs36tgc639gvdcateu9r45g98zmn752suez9jp"
