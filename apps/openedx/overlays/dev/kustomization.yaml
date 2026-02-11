@@ -6,19 +6,45 @@ resources:
     - hpa.yaml
     - ingress.yaml
 
+namespace: openedx
+
 patches:
-    # Apply JSON & Env injection only to LMS
-    - path: lms-patch.yaml
-      target:
+    # 1. Patch LMS: Add Env and Swap Volume
+    - target:
           kind: Deployment
           name: lms
-    # Apply JSON & Env injection only to CMS
-    - path: cms-patch.yaml
-      target:
+      patch: |-
+          - op: add
+            path: /spec/template/spec/containers/0/envFrom
+            value: [{secretRef: {name: openedx-settings}}]
+          - op: replace
+            path: /spec/template/spec/volumes/0
+            value: {name: config, secret: {secretName: openedx-settings}}
+
+    # 2. Patch CMS: Add Env and Swap Volume
+    - target:
           kind: Deployment
           name: cms
-    # Apply ONLY Env injection to Workers (No JSON files needed here)
-    - path: worker-patch.yaml
-      target:
+      patch: |-
+          - op: add
+            path: /spec/template/spec/containers/0/envFrom
+            value: [{secretRef: {name: openedx-settings}}]
+          - op: replace
+            path: /spec/template/spec/volumes/0
+            value: {name: config, secret: {secretName: openedx-settings}}
+
+    # 3. Patch Workers: Add Env only (Individually targeted for safety)
+    - target:
           kind: Deployment
-          name: .*-worker # Regex matches lms-worker and cms-worker
+          name: lms-worker
+      patch: |-
+          - op: add
+            path: /spec/template/spec/containers/0/envFrom
+            value: [{secretRef: {name: openedx-settings}}]
+    - target:
+          kind: Deployment
+          name: cms-worker
+      patch: |-
+          - op: add
+            path: /spec/template/spec/containers/0/envFrom
+            value: [{secretRef: {name: openedx-settings}}]
