@@ -5,7 +5,20 @@ resources:
     - secrets.yaml
     - hpa.yaml
     - ingress.yaml
+
 patches:
-    - path: volume-patch.yaml
+    # Apply JSON & Env injection only to LMS
+    - path: lms-patch.yaml
       target:
           kind: Deployment
+          name: lms
+    # Apply JSON & Env injection only to CMS
+    - path: cms-patch.yaml
+      target:
+          kind: Deployment
+          name: cms
+    # Apply ONLY Env injection to Workers (No JSON files needed here)
+    - path: worker-patch.yaml
+      target:
+          kind: Deployment
+          name: .*-worker # Regex matches lms-worker and cms-worker
