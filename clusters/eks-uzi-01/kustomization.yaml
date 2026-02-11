@@ -4,4 +4,4 @@ resources:
     - ../../infrastructure
     - ingress-sync.yaml
     - auxiliaries-sync.yaml
-    - openedx-sync.yaml
+    # - openedx-sync.yaml
