@@ -15,7 +15,7 @@ output "db_instance_master_secret_arn" {
 
 output "db_instance_endpoint" {
   description = "RDS MySQL instance endpoint"
-  value       = module.rds_mysql.db_instance_endpoint
+  value       = trimsuffix(module.rds_mysql.db_instance_endpoint, ":3306")
 }
 
 output "security_group_id" {
