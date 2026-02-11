@@ -1,28 +1,18 @@
-# This patch specifically targets the volume and env injection without touching images
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-    name: lms # This name is a placeholder; Kustomize matches by target in kustomization.yaml
-spec:
-    template:
-        spec:
-            containers:
-                - name: lms
-                  envFrom:
-                      - secretRef:
-                            name: openedx-settings
-                - name: cms
-                  envFrom:
-                      - secretRef:
-                            name: openedx-settings
-            volumes:
-                - name: config
-                  # We use an empty map to clear the previous configMap reference
-                  configMap: null
-                  secret:
-                      secretName: openedx-settings
-                      items:
-                          - key: lms.env.json
-                            path: lms.env.json
-                          - key: cms.env.json
-                            path: cms.env.json
+# This patch surgically updates the volume source to a Secret
+# and adds the envFrom reference without touching images.
+- op: replace
+  path: /spec/template/spec/volumes/0
+  value:
+      name: config
+      secret:
+          secretName: openedx-settings
+          items:
+              - key: lms.env.json
+                path: lms.env.json
+              - key: cms.env.json
+                path: cms.env.json
+- op: add
+  path: /spec/template/spec/containers/0/envFrom
+  value:
+      - secretRef:
+            name: openedx-settings
