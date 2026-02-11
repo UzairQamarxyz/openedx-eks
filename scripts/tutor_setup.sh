@@ -43,6 +43,7 @@ if command -v kubectl &>/dev/null; then
     echo "📄 Generating Base ConfigMaps..."
     # Render from Tutor and strip existing SOPS headers if present to prevent double-encryption errors
     kubectl kustomize "$TUTOR_ENV_ROOT" | yq 'select(.kind == "ConfigMap")' >"$OPENEDX_BASE_DIR/configmaps.yml"
+    sed -i -E 's/-[a-z0-9]{10}//g' "$OPENEDX_BASE_DIR/configmaps.yml"
 fi
 
 # 5. Generate Secrets (Overlay)
