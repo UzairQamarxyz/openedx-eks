@@ -43,16 +43,19 @@ spec:
               memory: 2Gi
           securityContext:
             allowPrivilegeEscalation: false
+          envFrom:
+            - secretRef:
+                name: openedx-secrets
       volumes:
         - name: settings-lms
-          configMap:
-            name: openedx-settings-lms
+          secret:
+            secretName: openedx-secrets
         - name: settings-cms
-          configMap:
-            name: openedx-settings-cms
+          secret:
+            secretName: openedx-secrets
         - name: config
-          configMap:
-            name: openedx-config
+          secret:
+            secretName: openedx-secrets
         - name: uwsgi-config
           configMap:
             name: openedx-uwsgi-config
@@ -106,16 +109,19 @@ spec:
               name: config
           securityContext:
             allowPrivilegeEscalation: false
+          envFrom:
+            - secretRef:
+                name: openedx-secrets
       volumes:
         - name: settings-lms
-          configMap:
-            name: openedx-settings-lms
+          secret:
+            secretName: openedx-secrets
         - name: settings-cms
-          configMap:
-            name: openedx-settings-cms
+          secret:
+            secretName: openedx-secrets
         - name: config
-          configMap:
-            name: openedx-config
+          secret:
+            secretName: openedx-secrets
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -162,16 +168,19 @@ spec:
               memory: 2Gi
           securityContext:
             allowPrivilegeEscalation: false
+          envFrom:
+            - secretRef:
+                name: openedx-secrets
       volumes:
         - name: settings-lms
-          configMap:
-            name: openedx-settings-lms
+          secret:
+            secretName: openedx-secrets
         - name: settings-cms
-          configMap:
-            name: openedx-settings-cms
+          secret:
+            secretName: openedx-secrets
         - name: config
-          configMap:
-            name: openedx-config
+          secret:
+            secretName: openedx-secrets
         - name: uwsgi-config
           configMap:
             name: openedx-uwsgi-config
@@ -225,16 +234,19 @@ spec:
               name: config
           securityContext:
             allowPrivilegeEscalation: false
+          envFrom:
+            - secretRef:
+                name: openedx-secrets
       volumes:
         - name: settings-lms
-          configMap:
-            name: openedx-settings-lms
+          secret:
+            secretName: openedx-secrets
         - name: settings-cms
-          configMap:
-            name: openedx-settings-cms
+          secret:
+            secretName: openedx-secrets
         - name: config
-          configMap:
-            name: openedx-config
+          secret:
+            secretName: openedx-secrets
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -271,6 +283,9 @@ spec:
           volumeMounts:
             - mountPath: /meili_data
               name: data
+          envFrom:
+            - secretRef:
+                name: openedx-secrets
       volumes:
         - name: data
           persistentVolumeClaim:
@@ -299,6 +314,10 @@ spec:
           image: docker.io/devture/exim-relay:4.96-r1-0
           ports:
             - containerPort: 8025
+          envFrom:
+            - secretRef:
+                name: openedx-secrets
+      volumes: []
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -323,7 +342,10 @@ spec:
           volumeMounts:
             - mountPath: /etc/caddy/
               name: config
+          envFrom:
+            - secretRef:
+                name: openedx-secrets
       volumes:
         - name: config
-          configMap:
-            name: mfe-caddy-config
+          secret:
+            secretName: openedx-secrets

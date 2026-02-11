@@ -46,6 +46,31 @@ if command -v kubectl &>/dev/null; then
     sed -i -E 's/-[a-z0-9]{10}//g' "$OPENEDX_BASE_DIR/configmaps.yml"
 fi
 
+# 4. Rewire Deployments AND Jobs to use 'openedx-secrets'
+echo "🔌 Rewiring Deployments and Jobs to use Secrets..."
+
+# Switch "settings-lms" and "settings-cms" volumes to use the Secret
+yq -i '
+  (.spec.template.spec.volumes[] | select(.name == "settings-lms" or .name == "settings-cms").secret) = {"secretName": "openedx-secrets"} |
+  del(.spec.template.spec.volumes[] | select(.name == "settings-lms" or .name == "settings-cms").configMap)
+' "$OPENEDX_BASE_DIR/deployments.yml"
+
+# Switch "config" volume to use Secret (if it exists)
+yq -i '
+  (.spec.template.spec.volumes[] | select(.name == "config").secret) = {"secretName": "openedx-secrets"} |
+  del(.spec.template.spec.volumes[] | select(.name == "config").configMap)
+' "$OPENEDX_BASE_DIR/deployments.yml"
+
+# Inject Env Vars from Secret into ALL containers in Deployments
+yq -i '
+  .spec.template.spec.containers[].envFrom += [{"secretRef": {"name": "openedx-secrets"}}]
+' "$OPENEDX_BASE_DIR/deployments.yml"
+
+# Inject Env Vars from Secret into ALL containers in Jobs (NEW)
+yq -i '
+  .spec.template.spec.containers[].envFrom += [{"secretRef": {"name": "openedx-secrets"}}]
+' "$OPENEDX_BASE_DIR/jobs.yml"
+
 # 5. Generate Secrets (Overlay)
 # FIXED: Indentation for JSON and Forced Strings for Env Vars
 echo "🔐 Generating secrets.yaml..."
