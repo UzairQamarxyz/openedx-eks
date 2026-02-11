@@ -4,17 +4,15 @@ metadata:
     name: lms-ingress
     namespace: openedx
     annotations:
-        # Traffic Routing
-        kubernetes.io/ingress.class: "nginx-ingress"
-
         # TLS / SSL (Cert-Manager)
         cert-manager.io/cluster-issuer: "letsencrypt-prod"
         nginx.ingress.kubernetes.io/ssl-redirect: "true"
 
         # Open edX specific tweaks
-        nginx.ingress.kubernetes.io/proxy-body-size: "500m" # Allow large file uploads
-        nginx.ingress.kubernetes.io/proxy-buffer-size: "16k" # Fix django header issues
+        nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+        nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
 spec:
+    ingressClassName: ingress-nginx
     tls:
         - hosts:
               - openedx.uzair.copebit-training.net
@@ -23,7 +21,7 @@ spec:
           secretName: openedx-tls-secret
 
     rules:
-        # 1. LMS Routing (FIXED HOSTNAME)
+        # 1. LMS Routing
         - host: openedx.uzair.copebit-training.net
           http:
               paths:
