@@ -1,113 +1,120 @@
 #!/bin/bash
 set -e
 
-# Usage: ./scripts/sync-flux.sh <env> <cluster_name>
+# Usage: ./scripts/sync-flux-clean.sh <env>
 ENV=${1:-dev}
-CLUSTER=${2:-eks-uzi-01}
 REPO_ROOT=$(git rev-parse --show-toplevel)
-
-# Path Configuration
 TUTOR_ENV_ROOT="/home/uzair/.local/share/tutor/env"
-TUTOR_ENV_K8S="$TUTOR_ENV_ROOT/k8s"
 TUTOR_ENV_APPS="$TUTOR_ENV_ROOT/apps/openedx/config"
 
-# Target Directories
-OPENEDX_BASE_DIR="$REPO_ROOT/apps/openedx/base"
-OPENEDX_OVERLAY_DIR="$REPO_ROOT/apps/openedx/overlays/$ENV"
+BASE_DIR="$REPO_ROOT/apps/openedx/base"
+OVERLAY_DIR="$REPO_ROOT/apps/openedx/overlays/$ENV"
 
-echo "📍 Syncing Flux manifests for Environment: [$ENV]"
+echo "🧹 Starting Clean Sync for [$ENV]..."
 
-# 1. Prerequisites Check
-if ! command -v yq &>/dev/null; then
-    echo "❌ Error: 'yq' (v4+) is required. Please install it."
-    exit 1
+# 1. Render FULL Manifests from Tutor
+echo "📄 Rendering Tutor manifests..."
+kubectl kustomize "$TUTOR_ENV_ROOT" >"$BASE_DIR/all-rendered.yaml"
+
+# 2. Global Hash Stripping
+echo "✂️  Stripping random suffixes..."
+sed -i -E 's/-[a-z0-9]{10}//g' "$BASE_DIR/all-rendered.yaml"
+
+# 3. Extract and Organize Files
+echo "📂 Splitting manifests..."
+
+# ALWAYS Update: Dynamic Resources
+yq 'select(.kind == "ConfigMap") | .metadata.namespace = "openedx"' "$BASE_DIR/all-rendered.yaml" >"$BASE_DIR/configmaps.yml"
+yq 'select(.kind == "Deployment" and .metadata.name != "caddy") | .metadata.namespace = "openedx"' "$BASE_DIR/all-rendered.yaml" >"$BASE_DIR/deployments.yml"
+yq 'select(.kind == "Service" and .metadata.name != "caddy") | .metadata.namespace = "openedx"' "$BASE_DIR/all-rendered.yaml" >"$BASE_DIR/services.yml"
+yq -i 'with(select(.metadata.name == "mfe"); .spec.type = "ClusterIP")' "$BASE_DIR/services.yml"
+
+# ALWAYS Update Jobs
+yq 'select(.kind == "Job") | .metadata.namespace = "openedx"' "$BASE_DIR/all-rendered.yaml" >"$BASE_DIR/jobs.yml"
+
+# CONDITIONAL Update: Static Resources
+if [ ! -f "$BASE_DIR/volumes.yml" ]; then
+    yq 'select(.kind == "PersistentVolumeClaim") | .metadata.namespace = "openedx"' "$BASE_DIR/all-rendered.yaml" >"$BASE_DIR/volumes.yml"
+fi
+if [ ! -f "$BASE_DIR/namespace.yml" ]; then
+    echo "apiVersion: v1
+kind: Namespace
+metadata:
+  name: openedx
+  labels:
+    app.kubernetes.io/component: namespace" >"$BASE_DIR/namespace.yml"
 fi
 
-# 2. Process Services & Deployments (Sanitization)
-echo "📦 Sanitizing Manifests..."
-# Remove Caddy service and deployments
-yq 'select(.metadata.name != "caddy")' "$TUTOR_ENV_K8S/services.yml" >"$OPENEDX_BASE_DIR/services.yml"
-yq 'select(.metadata.name != "caddy")' "$TUTOR_ENV_K8S/deployments.yml" >"$OPENEDX_BASE_DIR/deployments.yml"
+rm "$BASE_DIR/all-rendered.yaml"
 
-# Force MFE to ClusterIP (Ingress Requirement) [cite: 79, 80]
-yq -i 'with(select(.metadata.name == "mfe"); .spec.type = "ClusterIP")' "$OPENEDX_BASE_DIR/services.yml"
+# 4. Inject Secrets (Env Vars ONLY)
+echo "🔌 Injecting 'openedx-secrets' as envFrom..."
 
-# 3. Update Base Manifests
-echo "📄 Updating Base Manifests..."
-cp "$TUTOR_ENV_K8S/jobs.yml" "$OPENEDX_BASE_DIR/jobs.yml"
-cp "$TUTOR_ENV_K8S/namespace.yml" "$OPENEDX_BASE_DIR/namespace.yml"
-cp "$TUTOR_ENV_K8S/volumes.yml" "$OPENEDX_BASE_DIR/volumes.yml"
+# We ONLY inject envFrom. We do NOT replace the volumes.
+SECRET_REF='{"secretRef": {"name": "openedx-secrets"}}'
 
-# 4. Generate Base ConfigMaps
-if command -v kubectl &>/dev/null; then
-    echo "📄 Generating Base ConfigMaps..."
-    # Render from Tutor and strip existing SOPS headers if present to prevent double-encryption errors
-    kubectl kustomize "$TUTOR_ENV_ROOT" | yq 'select(.kind == "ConfigMap")' >"$OPENEDX_BASE_DIR/configmaps.yml"
-    sed -i -E 's/-[a-z0-9]{10}//g' "$OPENEDX_BASE_DIR/configmaps.yml"
-fi
+# Inject into Deployments
+yq -i ".spec.template.spec.containers[].envFrom += [$SECRET_REF]" "$BASE_DIR/deployments.yml"
 
-# 4. Rewire Deployments AND Jobs to use 'openedx-secrets'
-echo "🔌 Rewiring Deployments and Jobs to use Secrets..."
-
-# Switch "settings-lms" and "settings-cms" volumes to use the Secret
-yq -i '
-  (.spec.template.spec.volumes[] | select(.name == "settings-lms" or .name == "settings-cms").secret) = {"secretName": "openedx-secrets"} |
-  del(.spec.template.spec.volumes[] | select(.name == "settings-lms" or .name == "settings-cms").configMap)
-' "$OPENEDX_BASE_DIR/deployments.yml"
-
-# Switch "config" volume to use Secret (if it exists)
-yq -i '
-  (.spec.template.spec.volumes[] | select(.name == "config").secret) = {"secretName": "openedx-secrets"} |
-  del(.spec.template.spec.volumes[] | select(.name == "config").configMap)
-' "$OPENEDX_BASE_DIR/deployments.yml"
-
-# Inject Env Vars from Secret into ALL containers in Deployments
-yq -i '
-  .spec.template.spec.containers[].envFrom += [{"secretRef": {"name": "openedx-secrets"}}]
-' "$OPENEDX_BASE_DIR/deployments.yml"
-
-# Inject Env Vars from Secret into ALL containers in Jobs (NEW)
-yq -i '
-  .spec.template.spec.containers[].envFrom += [{"secretRef": {"name": "openedx-secrets"}}]
-' "$OPENEDX_BASE_DIR/jobs.yml"
+# Inject into Jobs
+yq -i ".spec.template.spec.containers[].envFrom += [$SECRET_REF]" "$BASE_DIR/jobs.yml"
 
 # 5. Generate Secrets (Overlay)
-# FIXED: Indentation for JSON and Forced Strings for Env Vars
-echo "🔐 Generating secrets.yaml..."
+echo "🔐 Generating openedx-secrets.yaml..."
 
-# Format JSON blocks with 4-space indentation to fit YAML block scalar
-LMS_JSON=$(yq -o=json '.' "$TUTOR_ENV_APPS/lms.env.yml" | sed 's/^/    /')
-CMS_JSON=$(yq -o=json '.' "$TUTOR_ENV_APPS/cms.env.yml" | sed 's/^/    /')
+# Capture variables
+LMS_JSON=$(yq -o=json '.' "$TUTOR_ENV_APPS/lms.env.yml")
+CMS_JSON=$(yq -o=json '.' "$TUTOR_ENV_APPS/cms.env.yml")
+# Extract only specific env vars safely
+ENV_VARS=$(yq 'with_entries(select(.key | test("^(MYSQL_|REDIS_|ELASTICSEARCH_|MONGODB_|HJ_)"))) | .[] |= ( . |  "" + .)' ~/.local/share/tutor/config.yml)
 
-# Extract Env Vars and force ALL values to strings using yq to avoid Flux validation errors [cite: 78]
-ENV_VARS_YAML=$(yq 'with_entries(select(.key | test("^(MYSQL_|REDIS_|ELASTICSEARCH_|MONGODB_|HJ_)"))) | .[] |= ( . |  "" + .)' ~/.local/share/tutor/config.yml | sed 's/^/  /')
+# FIXED: Use environment variables to pass JSON to yq (avoids quoting errors)
+LMS_JSON="$LMS_JSON" CMS_JSON="$CMS_JSON" yq eval -n '
+  .apiVersion = "v1" |
+  .kind = "Secret" |
+  .metadata.name = "openedx-secrets" |
+  .metadata.namespace = "openedx" |
+  .type = "Opaque" |
+  .stringData."lms.env.json" = env(LMS_JSON) |
+  .stringData."cms.env.json" = env(CMS_JSON)
+' >"$OVERLAY_DIR/secrets.yaml"
 
-cat <<EOF >"$OPENEDX_OVERLAY_DIR/secrets.yaml"
-apiVersion: v1
-kind: Secret
-metadata:
-  name: openedx-secrets
-  namespace: openedx
-type: Opaque
-stringData:
-  # --- JSON Configuration Files ---
-  lms.env.json: |
-$LMS_JSON
-  cms.env.json: |
-$CMS_JSON
-  # --- Environment Variables ---
-$ENV_VARS_YAML
+# Merge the scalar environment variables
+echo "$ENV_VARS" >env_temp.yaml
+yq eval-all 'select(fileIndex==0).stringData += select(fileIndex==1) | select(fileIndex==0)' "$OVERLAY_DIR/secrets.yaml" env_temp.yaml >secrets_final.yaml
+mv secrets_final.yaml "$OVERLAY_DIR/secrets.yaml"
+rm env_temp.yaml
+
+# 6. Kustomization Files
+if [ ! -f "$BASE_DIR/kustomization.yaml" ]; then
+    cat <<EOF >"$BASE_DIR/kustomization.yaml"
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: openedx
+resources:
+  - namespace.yml
+  - deployments.yml
+  - services.yml
+  - jobs.yml
+  - volumes.yml
+  - configmaps.yml
 EOF
-
-# 6. Update Flux Sync Path in Cluster Config
-CLUSTER_SYNC_FILE="$REPO_ROOT/clusters/$CLUSTER/openedx-sync.yaml"
-if [ -f "$CLUSTER_SYNC_FILE" ]; then
-    sed -i.bak "s|path: ./apps/openedx/overlays/.*|path: ./apps/openedx/overlays/$ENV|g" "$CLUSTER_SYNC_FILE" && rm "$CLUSTER_SYNC_FILE.bak"
-    echo "🔄 Updated Flux sync path for cluster [$CLUSTER]"
 fi
 
-echo "✅ Manifest sync complete. No static files (HPA/Patch/Kustomize) were overwritten."
-echo "⚠️  Action Required: Reset and re-encrypt sensitive files."
-echo "   sed -i '/^sops:/,\$d' $OPENEDX_BASE_DIR/configmaps.yml"
-echo "   sops --encrypt --in-place $OPENEDX_BASE_DIR/configmaps.yml"
-echo "   sops --encrypt --in-place $OPENEDX_OVERLAY_DIR/secrets.yaml"
+if [ ! -f "$OVERLAY_DIR/kustomization.yaml" ]; then
+    cat <<EOF >"$OVERLAY_DIR/kustomization.yaml"
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+  - secrets.yaml
+  - hpa.yaml
+  - ingress.yaml
+namespace: openedx
+EOF
+fi
+
+echo "✅ DONE. Secrets generated safely. Deployments updated correctly."
+echo "👉 Action Required:"
+echo "   sops --encrypt --in-place $BASE_DIR/configmaps.yml"
+echo "   sops --encrypt --in-place $OVERLAY_DIR/secrets.yaml"

@@ -1,67 +1,113 @@
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    app.kubernetes.io/version: 21.0.0
+  labels:
+    app.kubernetes.io/instance: openedx-O5sXSKK6eS4Ei6StnoV5Bqdp
+    app.kubernetes.io/managed-by: tutor
+    app.kubernetes.io/name: cms
+    app.kubernetes.io/part-of: openedx
   name: cms
-  labels:
-    app.kubernetes.io/name: cms
+  namespace: openedx
 spec:
-  type: ClusterIP
   ports:
     - port: 8000
       protocol: TCP
   selector:
+    app.kubernetes.io/instance: openedx-O5sXSKK6eS4Ei6StnoV5Bqdp
+    app.kubernetes.io/managed-by: tutor
     app.kubernetes.io/name: cms
+    app.kubernetes.io/part-of: openedx
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    app.kubernetes.io/version: 21.0.0
+  labels:
+    app.kubernetes.io/instance: openedx-O5sXSKK6eS4Ei6StnoV5Bqdp
+    app.kubernetes.io/managed-by: tutor
+    app.kubernetes.io/name: lms
+    app.kubernetes.io/part-of: openedx
   name: lms
-  labels:
-    app.kubernetes.io/name: lms
+  namespace: openedx
 spec:
-  type: ClusterIP
   ports:
     - port: 8000
       protocol: TCP
   selector:
+    app.kubernetes.io/instance: openedx-O5sXSKK6eS4Ei6StnoV5Bqdp
+    app.kubernetes.io/managed-by: tutor
     app.kubernetes.io/name: lms
+    app.kubernetes.io/part-of: openedx
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: meilisearch
+  annotations:
+    app.kubernetes.io/version: 21.0.0
   labels:
+    app.kubernetes.io/instance: openedx-O5sXSKK6eS4Ei6StnoV5Bqdp
+    app.kubernetes.io/managed-by: tutor
     app.kubernetes.io/name: meilisearch
+    app.kubernetes.io/part-of: openedx
+  name: meilisearch
+  namespace: openedx
 spec:
-  type: ClusterIP
   ports:
     - port: 7700
       protocol: TCP
   selector:
+    app.kubernetes.io/instance: openedx-O5sXSKK6eS4Ei6StnoV5Bqdp
+    app.kubernetes.io/managed-by: tutor
     app.kubernetes.io/name: meilisearch
+    app.kubernetes.io/part-of: openedx
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: smtp
+  annotations:
+    app.kubernetes.io/version: 21.0.0
   labels:
-    app.kubernetes.io/name: smtp
-spec:
-  type: ClusterIP
-  ports:
-    - port: 8025
-      protocol: TCP
-  selector:
-    app.kubernetes.io/name: smtp
----
-apiVersion: v1
-kind: Service
-metadata:
+    app.kubernetes.io/instance: openedx-O5sXSKK6eS4Ei6StnoV5Bqdp
+    app.kubernetes.io/managed-by: tutor
+    app.kubernetes.io/part-of: openedx
   name: mfe
+  namespace: openedx
 spec:
-  type: ClusterIP
   ports:
     - port: 8002
       protocol: TCP
   selector:
+    app.kubernetes.io/instance: openedx-O5sXSKK6eS4Ei6StnoV5Bqdp
+    app.kubernetes.io/managed-by: tutor
     app.kubernetes.io/name: mfe
+    app.kubernetes.io/part-of: openedx
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.kubernetes.io/version: 21.0.0
+  labels:
+    app.kubernetes.io/instance: openedx-O5sXSKK6eS4Ei6StnoV5Bqdp
+    app.kubernetes.io/managed-by: tutor
+    app.kubernetes.io/name: smtp
+    app.kubernetes.io/part-of: openedx
+  name: smtp
+  namespace: openedx
+spec:
+  ports:
+    - port: 8025
+      protocol: TCP
+  selector:
+    app.kubernetes.io/instance: openedx-O5sXSKK6eS4Ei6StnoV5Bqdp
+    app.kubernetes.io/managed-by: tutor
+    app.kubernetes.io/name: smtp
+    app.kubernetes.io/part-of: openedx
+  type: ClusterIP
