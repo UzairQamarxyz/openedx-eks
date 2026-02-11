@@ -1,25 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lms
+    name: lms # This patch will be applied to lms, cms, lms-worker, and cms-worker via kustomization patches
 spec:
-  template:
-    spec:
-      containers:
-        - name: lms
-          envFrom:
-            - secretRef:
-                name: openedx-settings
-        - name: cms
-          envFrom:
-            - secretRef:
-                name: openedx-settings
-      volumes:
-        - name: config
-          secret:
-            secretName: openedx-settings
-            items:
-              - key: lms.env.json
-                path: lms.env.json
-              - key: cms.env.json
-                path: cms.env.json
+    template:
+        spec:
+            containers:
+                - name: lms # Kustomize will target the correct container name automatically
+                  envFrom:
+                      - secretRef:
+                            name: openedx-settings
+            volumes:
+                - name: config
+                  configMap: null # This removes the existing ConfigMap source
+                  secret:
+                      secretName: openedx-settings
+                      items:
+                          - key: lms.env.json
+                            path: lms.env.json
+                          - key: cms.env.json
+                            path: cms.env.json
