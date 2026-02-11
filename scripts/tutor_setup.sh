@@ -60,7 +60,7 @@ cat <<EOF >"$OPENEDX_OVERLAY_DIR/secrets.yaml"
 apiVersion: v1
 kind: Secret
 metadata:
-  name: openedx-settings
+  name: openedx-secrets
   namespace: openedx
 type: Opaque
 stringData:
@@ -82,6 +82,6 @@ fi
 
 echo "✅ Manifest sync complete. No static files (HPA/Patch/Kustomize) were overwritten."
 echo "⚠️  Action Required: Reset and re-encrypt sensitive files."
-echo "   1. sed -i '/^sops:/,\$d' $OPENEDX_BASE_DIR/configmaps.yml"
-echo "   2. sops --encrypt --in-place $OPENEDX_BASE_DIR/configmaps.yml"
-echo "   3. sops --encrypt --in-place $OPENEDX_OVERLAY_DIR/secrets.yaml"
+echo "   sed -i '/^sops:/,\$d' $OPENEDX_BASE_DIR/configmaps.yml"
+echo "   sops --encrypt --in-place $OPENEDX_BASE_DIR/configmaps.yml"
+echo "   sops --encrypt --in-place $OPENEDX_OVERLAY_DIR/secrets.yaml"
