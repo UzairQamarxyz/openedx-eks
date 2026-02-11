@@ -7,48 +7,47 @@ resources:
     - ingress.yaml
 
 namespace: openedx
+# patches:
+#     # 1. Patch LMS: Remove old volume, add new volume, add envFrom
+#     - target:
+#           kind: Deployment
+#           name: lms
+#       patch: |-
+#           - op: remove
+#             path: /spec/template/spec/volumes/0
+#           - op: add
+#             path: /spec/template/spec/volumes/0
+#             value: {name: config, secret: {secretName: openedx-settings}}
+#           - op: add
+#             path: /spec/template/spec/containers/0/envFrom
+#             value: [{secretRef: {name: openedx-settings}}]
 
-patches:
-    # 1. Patch LMS: Remove old volume, add new volume, add envFrom
-    - target:
-          kind: Deployment
-          name: lms
-      patch: |-
-          - op: remove
-            path: /spec/template/spec/volumes/0
-          - op: add
-            path: /spec/template/spec/volumes/0
-            value: {name: config, secret: {secretName: openedx-settings}}
-          - op: add
-            path: /spec/template/spec/containers/0/envFrom
-            value: [{secretRef: {name: openedx-settings}}]
+#     # 2. Patch CMS: Remove old volume, add new volume, add envFrom
+#     - target:
+#           kind: Deployment
+#           name: cms
+#       patch: |-
+#           - op: remove
+#             path: /spec/template/spec/volumes/0
+#           - op: add
+#             path: /spec/template/spec/volumes/0
+#             value: {name: config, secret: {secretName: openedx-settings}}
+#           - op: add
+#             path: /spec/template/spec/containers/0/envFrom
+#             value: [{secretRef: {name: openedx-settings}}]
 
-    # 2. Patch CMS: Remove old volume, add new volume, add envFrom
-    - target:
-          kind: Deployment
-          name: cms
-      patch: |-
-          - op: remove
-            path: /spec/template/spec/volumes/0
-          - op: add
-            path: /spec/template/spec/volumes/0
-            value: {name: config, secret: {secretName: openedx-settings}}
-          - op: add
-            path: /spec/template/spec/containers/0/envFrom
-            value: [{secretRef: {name: openedx-settings}}]
-
-    # 3. Patch Workers: Add Env only (Workers usually don't have the config volume at index 0)
-    - target:
-          kind: Deployment
-          name: lms-worker
-      patch: |-
-          - op: add
-            path: /spec/template/spec/containers/0/envFrom
-            value: [{secretRef: {name: openedx-settings}}]
-    - target:
-          kind: Deployment
-          name: cms-worker
-      patch: |-
-          - op: add
-            path: /spec/template/spec/containers/0/envFrom
-            value: [{secretRef: {name: openedx-settings}}]
+#     # 3. Patch Workers: Add Env only (Workers usually don't have the config volume at index 0)
+#     - target:
+#           kind: Deployment
+#           name: lms-worker
+#       patch: |-
+#           - op: add
+#             path: /spec/template/spec/containers/0/envFrom
+#             value: [{secretRef: {name: openedx-settings}}]
+#     - target:
+#           kind: Deployment
+#           name: cms-worker
+#       patch: |-
+#           - op: add
+#             path: /spec/template/spec/containers/0/envFrom
+#             value: [{secretRef: {name: openedx-settings}}]
