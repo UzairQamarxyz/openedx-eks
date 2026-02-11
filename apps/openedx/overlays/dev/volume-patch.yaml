@@ -1,18 +1,24 @@
+# This patch specifically targets the volume and env injection without touching images
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: lms # This patch will be applied to lms, cms, lms-worker, and cms-worker via kustomization patches
+    name: lms # This name is a placeholder; Kustomize matches by target in kustomization.yaml
 spec:
     template:
         spec:
             containers:
-                - name: lms # Kustomize will target the correct container name automatically
+                - name: lms
+                  envFrom:
+                      - secretRef:
+                            name: openedx-settings
+                - name: cms
                   envFrom:
                       - secretRef:
                             name: openedx-settings
             volumes:
                 - name: config
-                  configMap: null # This removes the existing ConfigMap source
+                  # We use an empty map to clear the previous configMap reference
+                  configMap: null
                   secret:
                       secretName: openedx-settings
                       items:
