@@ -29,7 +29,7 @@ echo "📦 Sanitizing Manifests..."
 yq 'select(.metadata.name != "caddy")' "$TUTOR_ENV_K8S/services.yml" >"$OPENEDX_BASE_DIR/services.yml"
 yq 'select(.metadata.name != "caddy")' "$TUTOR_ENV_K8S/deployments.yml" >"$OPENEDX_BASE_DIR/deployments.yml"
 
-# Force MFE to ClusterIP (Assessment Requirement)
+# Force MFE to ClusterIP (Ingress Requirement) [cite: 79, 80]
 yq -i 'with(select(.metadata.name == "mfe"); .spec.type = "ClusterIP")' "$OPENEDX_BASE_DIR/services.yml"
 
 # 3. Update Base Manifests
@@ -39,22 +39,22 @@ cp "$TUTOR_ENV_K8S/namespace.yml" "$OPENEDX_BASE_DIR/namespace.yml"
 cp "$TUTOR_ENV_K8S/volumes.yml" "$OPENEDX_BASE_DIR/volumes.yml"
 
 # 4. Generate Base ConfigMaps
-# Note: These are rendered from Tutor but will be governed by the namespace in your kustomization.yaml
 if command -v kubectl &>/dev/null; then
     echo "📄 Generating Base ConfigMaps..."
+    # Render from Tutor and strip existing SOPS headers if present to prevent double-encryption errors
     kubectl kustomize "$TUTOR_ENV_ROOT" | yq 'select(.kind == "ConfigMap")' >"$OPENEDX_BASE_DIR/configmaps.yml"
 fi
 
 # 5. Generate Secrets (Overlay)
-# FIXED: We now force all values to strings to satisfy Kubernetes Secret schema validation
+# FIXED: Indentation for JSON and Forced Strings for Env Vars
 echo "🔐 Generating secrets.yaml..."
 
-# Format JSON blocks with proper YAML indentation
+# Format JSON blocks with 4-space indentation to fit YAML block scalar
 LMS_JSON=$(yq -o=json '.' "$TUTOR_ENV_APPS/lms.env.yml" | sed 's/^/    /')
 CMS_JSON=$(yq -o=json '.' "$TUTOR_ENV_APPS/cms.env.yml" | sed 's/^/    /')
 
-# Extract Env Vars from config.yml AND force values to strings (!!str) to avoid Flux validation errors
-ENV_VARS_YAML=$(yq 'with_entries(select(.key | test("^(MYSQL_|REDIS_|ELASTICSEARCH_|MONGODB_|HJ_)")) | .value tag = "!!str")' ~/.local/share/tutor/config.yml | sed 's/^/  /')
+# Extract Env Vars and force ALL values to strings using yq to avoid Flux validation errors [cite: 78]
+ENV_VARS_YAML=$(yq 'with_entries(select(.key | test("^(MYSQL_|REDIS_|ELASTICSEARCH_|MONGODB_|HJ_)"))) | .[] |= ( . |  "" + .)' ~/.local/share/tutor/config.yml | sed 's/^/  /')
 
 cat <<EOF >"$OPENEDX_OVERLAY_DIR/secrets.yaml"
 apiVersion: v1
@@ -80,7 +80,7 @@ if [ -f "$CLUSTER_SYNC_FILE" ]; then
     echo "🔄 Updated Flux sync path for cluster [$CLUSTER]"
 fi
 
-echo "✅ Manifest sync complete."
+echo "✅ Manifest sync complete. No static files (HPA/Patch/Kustomize) were overwritten."
 echo "⚠️  Action Required: Reset and re-encrypt sensitive files."
 echo "   1. sed -i '/^sops:/,\$d' $OPENEDX_BASE_DIR/configmaps.yml"
 echo "   2. sops --encrypt --in-place $OPENEDX_BASE_DIR/configmaps.yml"
