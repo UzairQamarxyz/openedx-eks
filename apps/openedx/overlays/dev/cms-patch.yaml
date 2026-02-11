@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: cms
+    namespace: openedx
+spec:
+    template:
+        spec:
+            containers:
+                - name: cms
+                  envFrom:
+                      - secretRef:
+                            name: openedx-settings
+            volumes:
+                - name: config
+                  configMap: null
+                  secret:
+                      secretName: openedx-settings
+                      items:
+                          - key: cms.env.json
+                            path: cms.env.json
+                          - key: lms.env.json
+                            path: lms.env.json
