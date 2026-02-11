@@ -1,8 +1,8 @@
 # Environment Variables
 env_vars = {
-  namespace = "alnafi"
-  stage     = "test"
-  name      = "openedx"
+  namespace = "demo"
+  stage     = "uzi"
+  name      = "uzair"
   TF-Module = "openedx"
   delimiter = "-"
 }

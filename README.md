@@ -1,3 +1,100 @@
+# Open edX Production-Ready Infrastructure (AWS EKS)
+
+This repository contains the **Terraform** infrastructure-as-code (IaC) required to deploy a
+production-ready Open edX platform on AWS. The architecture is designed to meet strict enforcement
+criteria for scalability, reliability, and operational discipline.
+
+## Architectural Judgment & Design
+
+This deployment follows a **Kubernetes-native** pattern, explicitly avoiding VM-style configurations
+to ensure full compatibility with modern cloud-native orchestration.
+
+### Core Infrastructure Components
+
+- **Compute:** Amazon EKS configured with **EKS Auto Mode** for seamless horizontal and vertical
+  scaling of both pods and nodes.
+- **Traffic Management:** Governed exclusively through an **Nginx Ingress Controller**. This ensures
+  clear separation between traffic management and application services, with no direct exposure via
+  NodePort or LoadBalancer.
+- **Data Services (Externalized):** To meet production-ready standards, all stateful services are
+  hosted **external to the cluster** using managed AWS services:
+  - **Aurora MySQL:** Core relational data.
+  - **DocumentDB (MongoDB API):** Course content and persistence.
+  - **Amazon ElastiCache (Redis):** Caching and task queues.
+  - **Amazon OpenSearch:** Platform and course search functionality.
+
+### GitOps & Scaling
+
+- **Flux CD:** Deployed for continuous, automated GitOps integration, ensuring the live environment
+  stays synchronized with the repository state.
+- **Hyperscale Readiness:** Application pods are stateless and governed by **Horizontal Pod
+  Autoscalers (HPA)**.
+- **Persistence:** AWS Backup is utilized to govern backups for all databases and EKS persistent
+  volumes, ensuring data integrity across pod restarts or rescheduling.
+
+## Repository Structure
+
+```text
+.
+├── main.tf                # Main entry point for AWS resource orchestration
+├── modules/               # Modularized infrastructure components
+[cite_start]│   ├── eks/               # EKS Cluster with Auto Mode and HPA enabled [cite: 41, 45]
+[cite_start]│   ├── ingress-nginx/     # Nginx Ingress Controller configuration [cite: 43]
+[cite_start]│   ├── rds/               # Aurora MySQL (External Database) [cite: 44]
+[cite_start]│   ├── documentdb/        # External MongoDB for course persistence [cite: 29, 44]
+[cite_start]│   ├── redis/             # External ElastiCache for caching [cite: 44]
+[cite_start]│   ├── opensearch/        # External Search service [cite: 44]
+│   ├── backup/            # AWS Backup vault and plan configurations
+│   ├── flux/              # Flux CD GitOps bootstrap
+│   └── vpc/               # Network isolation and VPC subnets
+├── accountprep.tf         # Initial AWS account baseline
+└── networkprep.tf         # Global networking and VPC Peering/Transit settings
+
+```
+
+## Enforcement & Compliance
+
+As per the **Enforcement Criteria**, this submission demonstrates:
+
+1. **Statelessness:** LMS and CMS pods maintain no in-cluster state; all data persists in DocumentDB/Aurora.
+2. **Failure Recovery:** Configured with readiness and liveness probes to support automatic recovery
+   and pod rescheduling.
+3. **Security:** Traffic is routed exclusively through Ingress; the default Tutor Caddy server is disabled.
+4. **Operational Discipline:** Includes comprehensive manifests for HPA, resource limits, and
+   architecture diagrams as required for live environment review.
+
+## Live Environment Walkthrough
+
+Reviewers can validate the production-readiness by:
+
+- Inspecting **DocumentDB** collections to verify course persistence after LMS/CMS pod restarts.
+- Observing **HPA behavior** during load testing to confirm hyperscale readiness.
+- Verifying that all LMS/CMS traffic is governed by the **Nginx Ingress Controller**.
+
+## Setup Guide
+
+1. Edit the terraform.auto.tfvars according to your setup.
+   1.1. Make sure to update the `dns_hosted_zone_name` with yours.
+   1.2. Make sure to update the `git_repo_url` with yours.
+   1.3. Make sure to update the `git_branch` with yours.
+
+2. Do a tofu/terraform init and apply.
+   2.1. Do a tofu/terraform apply without flux.
+       ```sh
+       terraform apply -exclude="module.flux.helm_release.flux_operator"
+       ```
+   2.2. Now do a complete apply.
+       ```sh
+       terraform apply
+       ```
+
+3. Now run the command in the output.
+
+   ```sh
+   # ⚠️ This command automatically executes tutor save config according to the infra deployed
+   terraform output  -raw tutor_config_all | bash
+   ```
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

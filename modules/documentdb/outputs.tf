@@ -1,11 +1,11 @@
+output "cluster_arn" {
+  description = "DocumentDB cluster arn"
+  value       = module.documentdb.arn
+}
+
 output "master_username" {
   description = "DocumentDB master username"
   value       = module.documentdb.master_username
-}
-
-output "primary_endpoint_address" {
-  description = "DocumentDB primary endpoint address"
-  value       = module.documentdb.endpoint
 }
 
 output "primary_endpoint_port" {
