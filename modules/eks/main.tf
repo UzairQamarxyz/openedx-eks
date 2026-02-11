@@ -90,7 +90,10 @@ module "eks" {
   cloudwatch_log_group_kms_key_id        = var.default_kms_key_arn
 
   cluster_tags = merge(module.eks_env.tags, { backup = var.backup_type })
-  tags         = merge(module.eks_env.tags, { backup = var.backup_type })
+  tags = merge(module.eks_env.tags, tomap({
+    "karpenter.sh/discovery" = var.cluster_name
+    "backup"                 = var.backup_type
+  }))
 }
 
 resource "aws_eks_addon" "cloudwatch_observability" {
