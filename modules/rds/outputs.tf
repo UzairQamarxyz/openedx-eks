@@ -8,11 +8,6 @@ output "db_instance_port" {
   value       = module.rds_mysql.db_instance_port
 }
 
-output "db_instance_master_secret_arn" {
-  description = "RDS MySQL instance master secret ARN"
-  value       = module.rds_mysql.db_instance_master_user_secret_arn
-}
-
 output "db_instance_endpoint" {
   description = "RDS MySQL instance endpoint"
   value       = trimsuffix(module.rds_mysql.db_instance_endpoint, ":3306")

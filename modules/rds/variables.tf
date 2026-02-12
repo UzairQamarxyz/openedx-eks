@@ -89,3 +89,9 @@ variable "multi_az_enabled" {
   description = "Whether to enable Multi-AZ for RDS."
   default     = true
 }
+
+variable "db_master_password" {
+  type        = string
+  description = "Master password for the RDS MySQL database."
+  sensitive   = true
+}

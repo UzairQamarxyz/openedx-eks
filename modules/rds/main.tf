@@ -53,7 +53,11 @@ module "rds_mysql" {
   kms_key_id            = var.rds_kms_key_arn
   storage_type          = "gp3"
 
-  manage_master_user_password = true
+  # Disabling this because sometimes the password created has special characters that cause issues with Auth
+  manage_master_user_password = false
+
+  password_wo         = var.db_master_password
+  password_wo_version = "1"
 
   # Database
   db_name  = var.rds_mysql_db_name

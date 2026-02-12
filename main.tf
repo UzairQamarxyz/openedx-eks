@@ -13,6 +13,7 @@ module "rds_mysql" {
   rds_mysql_allocated_storage = var.rds_mysql_allocated_storage
 
   db_master_username = var.db_master_username
+  db_master_password = var.db_master_password
 
   rds_kms_key_arn     = module.kms.rds_key_arn
   default_kms_key_arn = module.kms.default_key_arn
