@@ -11,7 +11,7 @@ spec:
               karpenter.sh/discovery: "eks-uzi-01"
     subnetSelectorTerms:
         - tags:
-              Name: Private*
+              kubernetes.io/role/internal-elb: "1"
               karpenter.sh/discovery: "eks-uzi-01"
     snatPolicy: "Random"
     networkPolicy: "DefaultAllow"
