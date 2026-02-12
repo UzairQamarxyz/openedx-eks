@@ -37,6 +37,7 @@ output "tutor_config_all" {
   description = "All database connection strings for Tutor configuration"
   value       = <<-EOT
 tutor config save \
+    --set CADDY_HTTP_PORT=81 \
     --set ENABLE_WEB_PROXY=false \
     --set RUN_ELASTICSEARCH=false \
     --set RUN_MONGODB=false \
