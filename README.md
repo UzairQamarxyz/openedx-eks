@@ -1,6 +1,9 @@
-# 📘 Open edX on EKS via Flux (GitOps)
+# Open edX on EKS via Flux (GitOps)
 
-This repository contains the complete Infrastructure-as-Code (Terraform) and Kubernetes manifests (Flux) required to deploy a scalable, production-grade Open edX instance on AWS EKS. It automates the transition from **Tutor** local configuration to a **GitOps** production workflow.
+This repository contains the complete Infrastructure-as-Code (Terraform) and
+Kubernetes manifests (Flux) required to deploy a scalable, production-grade Open
+edX instance on AWS EKS. It automates the transition from **Tutor** local
+configuration to a **GitOps** production workflow.
 
 ---
 

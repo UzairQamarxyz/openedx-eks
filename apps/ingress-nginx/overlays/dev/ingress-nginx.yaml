@@ -56,6 +56,6 @@ data:
               service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
               service.beta.kubernetes.io/aws-load-balancer-type: external
               service.beta.kubernetes.io/load-balancer-source-ranges: 0.0.0.0/0
-            externalTrafficPolicy: Local
+            externalTrafficPolicy: Cluster
           fullnameOverride: ingress-nginx
           namespaceOverride: ingress-nginx
