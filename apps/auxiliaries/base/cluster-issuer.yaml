@@ -11,4 +11,13 @@ spec:
         solvers:
             - http01:
                   ingress:
-                      class: ingress-nginx
+                      ingressClassName: ingress-nginx # <--- CHANGED from 'class'
+                      podTemplate:
+                          spec:
+                              nodeSelector:
+                                  kubernetes.io/os: linux
+                      ingressTemplate:
+                          metadata:
+                              annotations:
+                                  nginx.ingress.kubernetes.io/ssl-redirect: "false"
+                                  nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
