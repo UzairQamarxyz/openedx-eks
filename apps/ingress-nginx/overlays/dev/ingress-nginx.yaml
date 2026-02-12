@@ -35,7 +35,7 @@ data:
             tag: v1.11.5
             
           # 2. Match the class name Tutor uses ("nginx") instead of "ingress-nginx"
-          ingressClass: nginx
+          ingressClass: ingress-nginx
           ingressClassByName: true
           
           ingressClassResource:
@@ -49,6 +49,7 @@ data:
           replicaCount: 1
           service:
             annotations:
+              service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "600"
               service.beta.kubernetes.io/aws-load-balancer-attributes: load_balancing.cross_zone.enabled=true
               service.beta.kubernetes.io/aws-load-balancer-name: alnafi-test-eks-01-public-lb
               service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
