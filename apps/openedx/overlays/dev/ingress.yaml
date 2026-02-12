@@ -12,11 +12,12 @@ metadata:
         nginx.ingress.kubernetes.io/proxy-body-size: "500m"
         nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
 
+        # Timeouts: Tell NGINX to wait 5 minutes for the app
+        # This prevents 504 errors if the app is slow to respond
         nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
         nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
         nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
 
-        service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "600"
 spec:
     ingressClassName: ingress-nginx
     tls:
