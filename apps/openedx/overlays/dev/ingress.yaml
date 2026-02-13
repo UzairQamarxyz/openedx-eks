@@ -7,16 +7,11 @@ metadata:
         # TLS / SSL (Cert-Manager)
         cert-manager.io/cluster-issuer: "letsencrypt-prod"
         nginx.ingress.kubernetes.io/ssl-redirect: "true"
-
-        # Open edX specific tweaks
-        nginx.ingress.kubernetes.io/proxy-body-size: "500m"
-        nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
-
-        # Timeouts: Tell NGINX to wait 5 minutes for the app
-        # This prevents 504 errors if the app is slow to respond
-        nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+        nginx.ingress.kubernetes.io/proxy-body-size: "250m"
         nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
         nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+        nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+        nginx.ingress.kubernetes.io/upstream-vhost: "$host"
 
 spec:
     ingressClassName: ingress-nginx
