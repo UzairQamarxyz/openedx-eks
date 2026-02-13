@@ -4,6 +4,28 @@ This repository contains the **Terraform** infrastructure-as-code (IaC) required
 production-ready Open edX platform on AWS. The architecture is designed to meet strict enforcement
 criteria for scalability, reliability, and operational discipline.
 
+## Architectural Decisions
+
+### Flux CD for GitOps
+
+This project utilizes Flux CD for a fully automated GitOps workflow, ensuring that the state of the
+Kubernetes cluster mirrors the configuration defined in this repository. This approach provides
+reproducibility and a single source of truth for the entire application deployment.
+
+### Initial Approach: Manifest-Based GitOps
+
+Originally, the plan was to adopt an "all flux only" approach. This involved the following steps:
+1.  Rendering Kubernetes manifests locally using `tutor`.
+2.  Storing the generated manifests directly in the Git repository.
+3.  Using Flux CD to apply these manifests to the cluster.
+
+This method offered two primary advantages:
+- **Greater Customizability:** Direct manipulation of manifests allows for fine-grained control over every aspect of the deployment.
+- **Enhanced Security:** Secrets could be encrypted in the Git repository using [SOPS](https://github.com/mozilla/sops), providing an extra layer of security for sensitive data.
+
+However, this approach was abandoned due to unforeseen issues during implementation. The current
+strategy simplifies the deployment process while still leveraging the power of GitOps with Flux CD.
+
 ## Architectural Judgment & Design
 
 This deployment follows a **Kubernetes-native** pattern, explicitly avoiding VM-style configurations
@@ -22,6 +44,9 @@ to ensure full compatibility with modern cloud-native orchestration.
   - **DocumentDB (MongoDB API):** Course content and persistence.
   - **Amazon ElastiCache (Redis):** Caching and task queues.
   - **Amazon OpenSearch:** Platform and course search functionality.
+- **Certificate Management:** **cert-manager** is deployed to automatically provision and manage TLS
+  certificates, enabling HTTPS for all public-facing services. It handles the entire lifecycle of
+  certificate creation and renewal against the specified domains.
 
 ### GitOps & Scaling
 
@@ -29,8 +54,9 @@ to ensure full compatibility with modern cloud-native orchestration.
   stays synchronized with the repository state.
 - **Hyperscale Readiness:** Application pods are stateless and governed by **Horizontal Pod
   Autoscalers (HPA)**.
-- **Persistence:** AWS Backup is utilized to govern backups for all databases and EKS persistent
-  volumes, ensuring data integrity across pod restarts or rescheduling.
+- **Backup & Recovery:** **AWS Backup** is used to protect persistent volumes (EBS), RDS databases,
+  and the EKS cluster itself. Backups are managed efficiently through resource tagging, allowing
+  for centralized and automated data protection policies.
 
 ## Repository Structure
 
@@ -38,30 +64,40 @@ to ensure full compatibility with modern cloud-native orchestration.
 .
 ├── main.tf                # Main entry point for AWS resource orchestration
 ├── modules/               # Modularized infrastructure components
-[cite_start]│   ├── eks/               # EKS Cluster with Auto Mode and HPA enabled [cite: 41, 45]
-[cite_start]│   ├── ingress-nginx/     # Nginx Ingress Controller configuration [cite: 43]
-[cite_start]│   ├── rds/               # Aurora MySQL (External Database) [cite: 44]
-[cite_start]│   ├── documentdb/        # External MongoDB for course persistence [cite: 29, 44]
-[cite_start]│   ├── redis/             # External ElastiCache for caching [cite: 44]
-[cite_start]│   ├── opensearch/        # External Search service [cite: 44]
+│   ├── eks/               # EKS Cluster with Auto Mode and HPA enabled
+│   ├── ingress-nginx/     # Nginx Ingress Controller configuration
+│   ├── rds/               # Aurora MySQL (External Database)
+│   ├── documentdb/        # External MongoDB for course persistence
+│   ├── redis/             # External ElastiCache for caching
+│   ├── opensearch/        # External Search service
 │   ├── backup/            # AWS Backup vault and plan configurations
 │   ├── flux/              # Flux CD GitOps bootstrap
 │   └── vpc/               # Network isolation and VPC subnets
 ├── accountprep.tf         # Initial AWS account baseline
 └── networkprep.tf         # Global networking and VPC Peering/Transit settings
-
 ```
 
 ## Enforcement & Compliance
 
 As per the **Enforcement Criteria**, this submission demonstrates:
 
-1. **Statelessness:** LMS and CMS pods maintain no in-cluster state; all data persists in DocumentDB/Aurora.
-2. **Failure Recovery:** Configured with readiness and liveness probes to support automatic recovery
-   and pod rescheduling.
-3. **Security:** Traffic is routed exclusively through Ingress; the default Tutor Caddy server is disabled.
-4. **Operational Discipline:** Includes comprehensive manifests for HPA, resource limits, and
-   architecture diagrams as required for live environment review.
+1. **Production-Ready Definition:**
+   - The deployment is Kubernetes-native, with a clear separation between traffic management, application services, and data services.
+   - It has no dependency on single-pod or in-cluster state for critical data.
+   - The architecture is designed for horizontal scaling and failure recovery.
+2. **Ingress Requirement:**
+   - An Nginx Ingress Controller is deployed to manage all external access.
+   - OpenEdX LMS and CMS are exposed exclusively through the ingress.
+   - The default Tutor Caddy server is not used, and there is no direct exposure via NodePort or LoadBalancer.
+3. **External Database Requirement:**
+   - All stateful services are external to the Kubernetes cluster, using AWS managed services (RDS, DocumentDB, ElastiCache, OpenSearch).
+4. **Data Persistence Validation:**
+   - Course creation and modifications in OpenEdX Studio are persisted in an external DocumentDB instance.
+   - All data is retained after pod restarts or rescheduling.
+5. **Hyperscale Readiness:**
+   - LMS and CMS application pods are stateless.
+   - Readiness and liveness probes are properly configured.
+   - A Horizontal Pod Autoscaler (HPA) is configured for automatic scaling based on resource utilization.
 
 ## Live Environment Walkthrough
 
@@ -73,7 +109,7 @@ Reviewers can validate the production-readiness by:
 
 ## Setup Guide
 
-1. Edit the terraform.auto.tfvars according to your setup.
+1. Edit the `terraform.auto.tfvars` according to your setup.
    1.1. Make sure to update the `dns_hosted_zone_name` with yours.
    1.2. Make sure to update the `git_repo_url` with yours.
    1.3. Make sure to update the `git_branch` with yours.
